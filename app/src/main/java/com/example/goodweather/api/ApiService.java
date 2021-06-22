@@ -1,5 +1,6 @@
 package com.example.goodweather.api;
 
+import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
 import com.example.goodweather.bean.WeatherForecastBean;
@@ -42,4 +43,9 @@ public interface ApiService {
     @GET("/s6/weather/lifestyle?key=756dc8a018744a75a6200810559528a9")
     Call<LifeStyleBean> getLifeStyle(@Query("location") String location);
 
+    /**
+     * 必应每日一图
+     */
+    @GET("/HPImageArchive.aspx?format=js&idx=0&n=1")
+    Call<BiYingImgBean> biying();
 }

@@ -3,6 +3,7 @@ package com.example.goodweather.contract;
 import android.content.Context;
 
 import com.example.goodweather.api.ApiService;
+import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
 import com.example.goodweather.bean.WeatherForecastBean;
@@ -20,8 +21,10 @@ import retrofit2.Response;
 public class WeatherContract {
 
     public static class WeatherPresenter extends BasePresenter<IWeatherView> {
-
-        private ApiService mService = ServiceGenerator.createService(ApiService.class);
+        //和风天气地址
+        private ApiService mService = ServiceGenerator.createService(ApiService.class,0);
+        //必应地址
+        private ApiService mService1 = ServiceGenerator.createService(ApiService.class,1);
 
         /**
          * 当日天气
@@ -100,6 +103,23 @@ public class WeatherContract {
             });
         }
 
+        /**
+         * 必应每日一图
+         */
+        public void biying(Context context){
+            mService1.biying().enqueue(new NetCallBack<BiYingImgBean>() {
+                @Override
+                public void onSuccess(Call<BiYingImgBean> call, Response<BiYingImgBean> response) {
+                    getView().getBiYingResult(response);
+                }
+
+                @Override
+                public void onFailed() {
+                    getView().getDataFailed();
+                }
+            });
+        }
+
     }
 
 
@@ -112,6 +132,9 @@ public class WeatherContract {
         void getWeatherForecastResult(Response<WeatherForecastBean> response);
         //查询生活指数数据返回
         void getLifeStyleResult(Response<LifeStyleBean> response);
+
+        //必应每日意图返回
+        void getBiYingResult(Response<BiYingImgBean> response);
 
         //错误返回
         void getDataFailed();

@@ -1,14 +1,20 @@
 package com.example.goodweather;
 
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,11 +22,15 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.goodweather.adapter.AreaAdapter;
 import com.example.goodweather.adapter.CityAdapter;
 import com.example.goodweather.adapter.ProvinceAdapter;
 import com.example.goodweather.adapter.WeatherForecastAdapter;
+import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.CityBean;
 import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
@@ -32,8 +42,10 @@ import com.example.mvplibrary.mvp.MvpActivity;
 import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.ObjectUtils;
 import com.example.mvplibrary.view.WhiteWindmills;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +64,8 @@ import static com.example.mvplibrary.utils.RecyclerViewAnimation.runLayoutAnimat
 
 public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> implements WeatherContract.IWeatherView, View.OnClickListener {
 
+    @BindView(R.id.bg)
+    LinearLayout bg;//背景图
     @BindView(R.id.tv_info)
     TextView tvInfo;//天气状况
     @BindView(R.id.tv_temperature)
@@ -88,6 +102,11 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     TextView tvWindPower;//风力
     @BindView(R.id.iv_city_select)
     ImageView ivCitySelect;
+    @BindView(R.id.refresh)
+    SmartRefreshLayout refresh;//刷新布局
+    @BindView(R.id.iv_location)
+    ImageView ivLocation;//定位图标
+    private boolean flag = true;//定位图标显示,只有定位的时候显示为true,切换城市和常用城市不显示
 
     private RxPermissions rxPermissions;//权限请求框架
 
@@ -101,6 +120,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     private List<CityBean> provinceList;//省列表数据
     private List<CityBean.Citydata> citylist;//市列表数据
     private List<CityBean.Citydata.AreaBean> arealist;//区/县列表数据
+    private String district; //全局变量,方便更换城市后也能下拉刷新
     ProvinceAdapter provinceAdapter;//省数据适配器
     CityAdapter cityAdapter;//市数据适配器
     AreaAdapter areaAdapter;//县/区数据适配器
@@ -329,10 +349,12 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                                     areaAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                                         @Override
                                         public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-
+                                            showLoadingDialog();
+                                            district = arealist.get(position).getName();//选择的城市
                                             mPresent.todayWeather(context,arealist.get(position).getName());//今日天气
                                             mPresent.weatherForecast(context, arealist.get(position).getName());//天气预报
                                             mPresent.lifeStyle(context, arealist.get(position).getName());//生活指数
+                                            flag = false;//切换城市不属于定位,因此隐藏图标
                                             liWindow.closePopupWindow();
 
                                         }
@@ -372,13 +394,26 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         @Override
         public void onReceiveLocation(BDLocation location) {
             //获取区/县
-            String district = location.getDistrict();
+            district = location.getDistrict();
+            //在数据请求之前加载等待弹窗,结果返回后关闭
+            showLoadingDialog();
             //获取今天的天气数据
             mPresent.todayWeather(context, district);
             //获取天气预报数据
             mPresent.weatherForecast(context, district);
             //获取生活指数有
             mPresent.lifeStyle(context, district);
+            //获取必应每日一图
+            mPresent.biying(context);
+            //下拉刷新
+            refresh.setOnRefreshListener(refreshLayout -> {
+                //获取今天的天气数据
+                mPresent.todayWeather(context, district);
+                //获取天气预报数据
+                mPresent.weatherForecast(context, district);
+                //获取生活指数有
+                mPresent.lifeStyle(context, district);
+            });
 
         }
     }
@@ -386,10 +421,16 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     //查询当天天气，请求成功后的数据返回
     @Override
     public void getTodayWeatherResult(Response<TodayBean> response) {
+       dismissLoadingDialog();//关闭弹窗
         //数据返回后关闭定位
         mLocationClient.stop();
         if (response.body().getHeWeather6().get(0).getBasic() != null) {//得到数据不为空则进行数据显示
             //数据渲染显示出来
+            if (flag) {
+                ivLocation.setVisibility(View.VISIBLE);//显示定位图标
+            }else {
+                ivLocation.setVisibility(View.GONE);//隐藏定位图标
+            }
             tvTemperature.setText(response.body().getHeWeather6().get(0).getNow().getTmp());//温度
             tvCity.setText(response.body().getHeWeather6().get(0).getBasic().getLocation());//城市
             tvInfo.setText(response.body().getHeWeather6().get(0).getNow().getCond_txt());//天气状况
@@ -458,10 +499,36 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         }
     }
 
+    @Override
+    public void getBiYingResult(Response<BiYingImgBean> response) {
+        dismissLoadingDialog();
+        if (response.body().getImages()!=null) {
+            //图片地址没有前缀,所以需要加上前缀
+            String imgUrl = "http://cn.bing.com" + response.body().getImages().get(0).getUrl();
+            Glide.with(context)
+                    .asBitmap()
+                    .load(imgUrl)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                            Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                            bg.setBackground(drawable);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                            ToastUtils.showShortToast(context, "数据为空");
+                        }
+                    });
+        }
+    }
+
 
     //数据请求失败返回
     @Override
     public void getDataFailed() {
+        refresh.finishLoadMore();//关闭刷新
+        dismissLoadingDialog();//关闭弹窗
         ToastUtils.showShortToast(context, "网络异常");//这里的context是框架中封装好的，等同于this
     }
 
