@@ -140,14 +140,47 @@
                                 android:visibility="gone" />
                         </LinearLayout>
                         <!--上一次更新时间-->
-                        <TextView
-                            android:id="@+id/tv_old_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <LinearLayout
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:drawableLeft="@mipmap/icon_weather_sun"
+                                android:drawablePadding="4dp"
+                                android:text="Good Weather"
+                                android:textSize="@dimen/sp_12"
+                                android:textColor="#FFF"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+                            <TextView
+                                android:gravity="right"
+                                android:id="@+id/tv_old_time"
+                                android:textColor="#FFF"
+                                android:text="上次更新时间："
+                                android:textSize="@dimen/sp_12"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+
+                        <!--分隔线 增加UI效果-->
+                        <View
                             android:layout_marginTop="8dp"
-                            android:text="上次更新时间："
-                            android:textColor="#FFF"
-                            android:textSize="@dimen/sp_12" />
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#FFF"
+                            android:alpha="0.1"/>
+
+                        <!--用于显示逐小时天气-->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:padding="12dp"
+                            android:id="@+id/rv_hourly"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
 
                         <!--用于显示天气预报数据-->
                         <androidx.recyclerview.widget.RecyclerView

@@ -30,14 +30,17 @@ import com.example.goodweather.adapter.AreaAdapter;
 import com.example.goodweather.adapter.CityAdapter;
 import com.example.goodweather.adapter.ProvinceAdapter;
 import com.example.goodweather.adapter.WeatherForecastAdapter;
+import com.example.goodweather.adapter.WeatherHourlyAdapter;
 import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.CityBean;
+import com.example.goodweather.bean.HourlyBean;
 import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
 import com.example.goodweather.bean.WeatherForecastBean;
 import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.utils.StatusBarUtil;
 import com.example.goodweather.utils.ToastUtils;
+import com.example.goodweather.utils.WeatherUtil;
 import com.example.mvplibrary.mvp.MvpActivity;
 import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.ObjectUtils;
@@ -106,6 +109,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     SmartRefreshLayout refresh;//刷新布局
     @BindView(R.id.iv_location)
     ImageView ivLocation;//定位图标
+    @BindView(R.id.rv_hourly)
+    RecyclerView rvHourly;//天气预报
     private boolean flag = true;//定位图标显示,只有定位的时候显示为true,切换城市和常用城市不显示
 
     private RxPermissions rxPermissions;//权限请求框架
@@ -121,11 +126,13 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     private List<CityBean.Citydata> citylist;//市列表数据
     private List<CityBean.Citydata.AreaBean> arealist;//区/县列表数据
     private String district; //全局变量,方便更换城市后也能下拉刷新
-    ProvinceAdapter provinceAdapter;//省数据适配器
-    CityAdapter cityAdapter;//市数据适配器
-    AreaAdapter areaAdapter;//县/区数据适配器
-    String provinceTitle;//标题
-    LiWindow liWindow;//自定义弹窗
+    private List<HourlyBean.HeWeather6Bean.HourlyData> mListHourly;//初始化数据源 -> 逐小时天气预报
+    private WeatherHourlyAdapter mAdapterHourly;//初始化适配器 逐小时天气预报
+    private ProvinceAdapter provinceAdapter;//省数据适配器
+    private CityAdapter cityAdapter;//市数据适配器
+    private AreaAdapter areaAdapter;//县/区数据适配器
+    private  String provinceTitle;//标题
+    private LiWindow liWindow;//自定义弹窗
 
     //数据初始化  主线程，onCreate方法可以删除了，把里面的代码移动这个initData下面
     @Override
@@ -156,6 +163,14 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         LinearLayoutManager manager = new LinearLayoutManager(context);//布局管理,默认是纵向
         rv.setLayoutManager(manager);//为列表配置管理器
         rv.setAdapter(mAdapter);//为列表配置适配器
+        //逐小时天气预报
+        mListHourly = new ArrayList<>();
+        mAdapterHourly = new WeatherHourlyAdapter(R.layout.item_weather_hourly_list,mListHourly);
+        LinearLayoutManager managerHourly = new LinearLayoutManager(context);
+        managerHourly.setOrientation(RecyclerView.HORIZONTAL);
+        rvHourly.setLayoutManager(managerHourly);
+        rvHourly.setAdapter(mAdapterHourly);
+
     }
 
     //绑定Presenter ，这里不绑定会报错
@@ -326,7 +341,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                                     if (arealist != null) {
                                         arealist.clear();
                                     }
-                                    if(list != null){
+                                    if (list != null) {
                                         list.clear();
                                     }
                                     for (int i = 0; i < areaJsonArray.length(); i++) {
@@ -351,9 +366,10 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                                         public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                                             showLoadingDialog();
                                             district = arealist.get(position).getName();//选择的城市
-                                            mPresent.todayWeather(context,arealist.get(position).getName());//今日天气
-                                            mPresent.weatherForecast(context, arealist.get(position).getName());//天气预报
-                                            mPresent.lifeStyle(context, arealist.get(position).getName());//生活指数
+                                            mPresent.todayWeather(context, district);//今日天气
+                                            mPresent.weatherForecast(context, district);//天气预报
+                                            mPresent.lifeStyle(context, district);//生活指数
+                                            mPresent.getHourly(context,district); //逐小时天气预报
                                             flag = false;//切换城市不属于定位,因此隐藏图标
                                             liWindow.closePopupWindow();
 
@@ -405,6 +421,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             mPresent.lifeStyle(context, district);
             //获取必应每日一图
             mPresent.biying(context);
+            //逐小时天气预报
+            mPresent.getHourly(context,district);
             //下拉刷新
             refresh.setOnRefreshListener(refreshLayout -> {
                 //获取今天的天气数据
@@ -413,6 +431,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                 mPresent.weatherForecast(context, district);
                 //获取生活指数有
                 mPresent.lifeStyle(context, district);
+                //逐小时天气预报
+                mPresent.getHourly(context,district);
             });
 
         }
@@ -421,20 +441,24 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     //查询当天天气，请求成功后的数据返回
     @Override
     public void getTodayWeatherResult(Response<TodayBean> response) {
-       dismissLoadingDialog();//关闭弹窗
+        refresh.finishRefresh();
+        dismissLoadingDialog();//关闭弹窗
         //数据返回后关闭定位
         mLocationClient.stop();
         if (response.body().getHeWeather6().get(0).getBasic() != null) {//得到数据不为空则进行数据显示
             //数据渲染显示出来
             if (flag) {
                 ivLocation.setVisibility(View.VISIBLE);//显示定位图标
-            }else {
+            } else {
                 ivLocation.setVisibility(View.GONE);//隐藏定位图标
             }
             tvTemperature.setText(response.body().getHeWeather6().get(0).getNow().getTmp());//温度
             tvCity.setText(response.body().getHeWeather6().get(0).getBasic().getLocation());//城市
             tvInfo.setText(response.body().getHeWeather6().get(0).getNow().getCond_txt());//天气状况
-            tvOldTime.setText("上次更新时间：" + response.body().getHeWeather6().get(0).getUpdate().getLoc());
+            //修改上次更新时间
+            String dataTime = response.body().getHeWeather6().get(0).getUpdate().getLoc();
+            String time = dataTime.substring(11);
+            tvOldTime.setText("上次更新时间：" + WeatherUtil.showTimeInfo(time));
 
             tvWindDirection.setText("风向     " + response.body().getHeWeather6().get(0).getNow().getWind_dir());//风向
             tvWindPower.setText("风力     " + response.body().getHeWeather6().get(0).getNow().getWind_sc() + "级");//风力
@@ -502,7 +526,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     @Override
     public void getBiYingResult(Response<BiYingImgBean> response) {
         dismissLoadingDialog();
-        if (response.body().getImages()!=null) {
+        if (response.body().getImages() != null) {
             //图片地址没有前缀,所以需要加上前缀
             String imgUrl = "http://cn.bing.com" + response.body().getImages().get(0).getUrl();
             Glide.with(context)
@@ -523,11 +547,29 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         }
     }
 
+    @Override
+    public void getHourly(Response<HourlyBean> response) {
+        dismissLoadingDialog();//关闭弹窗
+        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
+            if (response.body().getHeWeather6().get(0).getHourly() != null) {
+                List<HourlyBean.HeWeather6Bean.HourlyData> data = response.body().getHeWeather6().get(0).getHourly();
+                mListHourly.clear();
+                mListHourly.addAll(data);
+                mAdapterHourly.notifyDataSetChanged();
+            }else {
+                ToastUtils.showShortToast(context,"逐小时预报数据为空");
+            }
+        } else {
+            ToastUtils.showShortToast(context, response.body().getHeWeather6().get(0).getStatus());
+        }
+
+    }
+
 
     //数据请求失败返回
     @Override
     public void getDataFailed() {
-        refresh.finishLoadMore();//关闭刷新
+        refresh.finishRefresh();//关闭刷新
         dismissLoadingDialog();//关闭弹窗
         ToastUtils.showShortToast(context, "网络异常");//这里的context是框架中封装好的，等同于this
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.goodweather.api.ApiService;
 import com.example.goodweather.bean.BiYingImgBean;
+import com.example.goodweather.bean.HourlyBean;
 import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
 import com.example.goodweather.bean.WeatherForecastBean;
@@ -120,6 +121,21 @@ public class WeatherContract {
             });
         }
 
+
+        public void getHourly(Context context, String location){
+            mService.getHourly(location).enqueue(new NetCallBack<HourlyBean>() {
+                @Override
+                public void onSuccess(Call<HourlyBean> call, Response<HourlyBean> response) {
+                    getView().getHourly(response);
+                }
+
+                @Override
+                public void onFailed() {
+                    getView().getDataFailed();
+                }
+            });
+        }
+
     }
 
 
@@ -135,6 +151,8 @@ public class WeatherContract {
 
         //必应每日意图返回
         void getBiYingResult(Response<BiYingImgBean> response);
+        //逐小时预报
+        void getHourly(Response<HourlyBean> response);
 
         //错误返回
         void getDataFailed();
