@@ -94,18 +94,18 @@
                                 android:id="@+id/tv_temperature"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
                                 android:text="0"
                                 android:textColor="#FFF"
-                                android:textSize="60sp"
-                                android:layout_centerInParent="true"/>
+                                android:textSize="60sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
+                                android:layout_toRightOf="@+id/tv_temperature"
                                 android:text="℃"
                                 android:textColor="#FFF"
-                                android:textSize="24sp"
-                                android:layout_toRightOf="@+id/tv_temperature"/>
+                                android:textSize="24sp" />
                         </RelativeLayout>
 
                         <!--最高温和最低温-->
@@ -141,46 +141,48 @@
                         </LinearLayout>
                         <!--上一次更新时间-->
                         <LinearLayout
-                            android:paddingLeft="20dp"
-                            android:paddingRight="20dp"
-                            android:layout_marginTop="20dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp">
+
                             <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:drawableLeft="@mipmap/icon_weather_sun"
                                 android:drawablePadding="4dp"
                                 android:text="Good Weather"
-                                android:textSize="@dimen/sp_12"
                                 android:textColor="#FFF"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
+                                android:textSize="@dimen/sp_12" />
+
                             <TextView
-                                android:gravity="right"
                                 android:id="@+id/tv_old_time"
-                                android:textColor="#FFF"
-                                android:text="上次更新时间："
-                                android:textSize="@dimen/sp_12"
                                 android:layout_width="0dp"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_height="wrap_content"/>
+                                android:gravity="right"
+                                android:text="上次更新时间："
+                                android:textColor="#FFF"
+                                android:textSize="@dimen/sp_12" />
                         </LinearLayout>
 
                         <!--分隔线 增加UI效果-->
                         <View
-                            android:layout_marginTop="8dp"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginRight="20dp"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#FFF"
-                            android:alpha="0.1"/>
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="20dp"
+                            android:alpha="0.1"
+                            android:background="#FFF" />
 
                         <!--用于显示逐小时天气-->
                         <androidx.recyclerview.widget.RecyclerView
-                            android:padding="12dp"
                             android:id="@+id/rv_hourly"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:padding="12dp" />
 
                         <!--用于显示天气预报数据-->
                         <androidx.recyclerview.widget.RecyclerView
@@ -188,6 +190,242 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp" />
+                        <!--空气质量-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+                            <!--标题-->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="空气质量"
+                                android:textColor="@color/white"
+                                android:textSize="18sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:padding="8dp">
+                                <!--污染指数 动画展示-->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="8dp"
+                                        android:text="污染指数"
+                                        android:textColor="#DAEBEE"
+                                        android:textSize="14sp" />
+                                    <!--显示污染指数进度值-->
+                                    <com.example.mvplibrary.view.RoundProgressBar
+                                        android:id="@+id/rpb_aqi"
+                                        android:layout_width="120dp"
+                                        android:layout_height="120dp"
+                                        android:layout_gravity="center"
+                                        app:round_bg_color="#C6D7F4"
+                                        app:round_progress_color="#FBFEF7" />
+                                </LinearLayout>
+                                <!--其他指数-->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <!--PM10-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:text="PM10"
+                                            android:textColor="@color/blue_one"
+                                            android:textSize="12sp" />
+
+                                        <TextView
+                                            android:id="@+id/tv_pm10"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <!--PM2.5-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:text="PM2.5"
+                                            android:textColor="@color/blue_one"
+                                            android:textSize="12sp" />
+
+                                        <TextView
+                                            android:id="@+id/tv_pm25"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <!--NO2 二氧化氮-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp">
+
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="NO"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="12sp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="2"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="8sp" />
+                                        </LinearLayout>
+
+                                        <TextView
+                                            android:id="@+id/tv_no2"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <!--SO2 二氧化硫-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp">
+
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="SO"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="12sp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="2"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="8sp" />
+                                        </LinearLayout>
+
+                                        <TextView
+                                            android:id="@+id/tv_so2"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <!--O3 臭氧-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp">
+
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="O"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="12sp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="3"
+                                                android:textColor="@color/blue_one"
+                                                android:textSize="8sp" />
+                                        </LinearLayout>
+
+                                        <TextView
+                                            android:id="@+id/tv_o3"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <!--CO 一氧化碳-->
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:text="CO"
+                                            android:textColor="@color/blue_one"
+                                            android:textSize="12sp" />
+
+                                        <TextView
+                                            android:id="@+id/tv_co"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
 
                         <!--风力展示-->
                         <LinearLayout

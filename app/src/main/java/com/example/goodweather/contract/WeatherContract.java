@@ -3,6 +3,7 @@ package com.example.goodweather.contract;
 import android.content.Context;
 
 import com.example.goodweather.api.ApiService;
+import com.example.goodweather.bean.AirNowCityBean;
 import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.HourlyBean;
 import com.example.goodweather.bean.LifeStyleBean;
@@ -121,7 +122,11 @@ public class WeatherContract {
             });
         }
 
-
+        /**
+         * 逐小时天气预报数据
+         * @param context
+         * @param location
+         */
         public void getHourly(Context context, String location){
             mService.getHourly(location).enqueue(new NetCallBack<HourlyBean>() {
                 @Override
@@ -135,6 +140,27 @@ public class WeatherContract {
                 }
             });
         }
+
+        /**
+         *
+         * @param context
+         * @param location
+         * 空气质量数据
+         */
+        public void getAirNowCityResult(Context context, String location){
+            mService.getAirNowCity(location).enqueue(new NetCallBack<AirNowCityBean>() {
+                @Override
+                public void onSuccess(Call<AirNowCityBean> call, Response<AirNowCityBean> response) {
+                    getView().getAirNowCityResult(response);
+                }
+
+                @Override
+                public void onFailed() {
+                    getView().getDataFailed();
+                }
+            });
+        }
+
 
     }
 
@@ -153,6 +179,8 @@ public class WeatherContract {
         void getBiYingResult(Response<BiYingImgBean> response);
         //逐小时预报
         void getHourly(Response<HourlyBean> response);
+        //空气质量数据
+        void getAirNowCityResult(Response<AirNowCityBean> response);
 
         //错误返回
         void getDataFailed();

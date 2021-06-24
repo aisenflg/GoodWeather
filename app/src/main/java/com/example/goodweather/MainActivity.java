@@ -31,6 +31,7 @@ import com.example.goodweather.adapter.CityAdapter;
 import com.example.goodweather.adapter.ProvinceAdapter;
 import com.example.goodweather.adapter.WeatherForecastAdapter;
 import com.example.goodweather.adapter.WeatherHourlyAdapter;
+import com.example.goodweather.bean.AirNowCityBean;
 import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.CityBean;
 import com.example.goodweather.bean.HourlyBean;
@@ -44,6 +45,7 @@ import com.example.goodweather.utils.WeatherUtil;
 import com.example.mvplibrary.mvp.MvpActivity;
 import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.ObjectUtils;
+import com.example.mvplibrary.view.RoundProgressBar;
 import com.example.mvplibrary.view.WhiteWindmills;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -111,6 +113,21 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     ImageView ivLocation;//定位图标
     @BindView(R.id.rv_hourly)
     RecyclerView rvHourly;//天气预报
+    @BindView(R.id.rpb_aqi)
+    RoundProgressBar rpbAqi;//污染指数圆环
+    @BindView(R.id.tv_pm10)
+    TextView tvPm10;//PM10
+    @BindView(R.id.tv_pm25)
+    TextView tvPm25;//PM2.5
+    @BindView(R.id.tv_no2)
+    TextView tvNo2;//二氧化氮
+    @BindView(R.id.tv_so2)
+    TextView tvSo2;//二氧化硫
+    @BindView(R.id.tv_o3)
+    TextView tvO3;//臭氧
+    @BindView(R.id.tv_co)
+    TextView tvCo;//一氧化碳
+
     private boolean flag = true;//定位图标显示,只有定位的时候显示为true,切换城市和常用城市不显示
 
     private RxPermissions rxPermissions;//权限请求框架
@@ -125,13 +142,14 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     private List<CityBean> provinceList;//省列表数据
     private List<CityBean.Citydata> citylist;//市列表数据
     private List<CityBean.Citydata.AreaBean> arealist;//区/县列表数据
-    private String district; //全局变量,方便更换城市后也能下拉刷新
+    private String district; //区/县 更改为全局变量,方便更换城市后也能下拉刷新
+    private String city; //市  国控站点数据,用于请求空气质量
     private List<HourlyBean.HeWeather6Bean.HourlyData> mListHourly;//初始化数据源 -> 逐小时天气预报
     private WeatherHourlyAdapter mAdapterHourly;//初始化适配器 逐小时天气预报
     private ProvinceAdapter provinceAdapter;//省数据适配器
     private CityAdapter cityAdapter;//市数据适配器
     private AreaAdapter areaAdapter;//县/区数据适配器
-    private  String provinceTitle;//标题
+    private String provinceTitle;//标题
     private LiWindow liWindow;//自定义弹窗
 
     //数据初始化  主线程，onCreate方法可以删除了，把里面的代码移动这个initData下面
@@ -334,6 +352,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                                             arealist.clear();
                                         }
                                     });
+                                    //获取区/县的上级 市,用于请求空气质量数据的API接口
+                                    city = citylist.get(position).getName();
                                     //根据当前城市数组位置 获取地区数据
                                     windowTitle.setText(citylist.get(position).getName());
                                     JSONObject cityJsonObj = cityArray.getJSONObject(position);
@@ -370,6 +390,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                                             mPresent.weatherForecast(context, district);//天气预报
                                             mPresent.lifeStyle(context, district);//生活指数
                                             mPresent.getHourly(context,district); //逐小时天气预报
+                                            mPresent.getAirNowCityResult(context,city);  //获取空气质量数据
                                             flag = false;//切换城市不属于定位,因此隐藏图标
                                             liWindow.closePopupWindow();
 
@@ -411,6 +432,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         public void onReceiveLocation(BDLocation location) {
             //获取区/县
             district = location.getDistrict();
+            //获取市
+            city = location.getCity();
             //在数据请求之前加载等待弹窗,结果返回后关闭
             showLoadingDialog();
             //获取今天的天气数据
@@ -423,6 +446,9 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             mPresent.biying(context);
             //逐小时天气预报
             mPresent.getHourly(context,district);
+            //获取空气质量数据
+            mPresent.getAirNowCityResult(context,city);
+
             //下拉刷新
             refresh.setOnRefreshListener(refreshLayout -> {
                 //获取今天的天气数据
@@ -433,6 +459,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                 mPresent.lifeStyle(context, district);
                 //逐小时天气预报
                 mPresent.getHourly(context,district);
+                //获取空气质量数据
+                mPresent.getAirNowCityResult(context,city);
             });
 
         }
@@ -458,7 +486,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             //修改上次更新时间
             String dataTime = response.body().getHeWeather6().get(0).getUpdate().getLoc();
             String time = dataTime.substring(11);
-            tvOldTime.setText("上次更新时间：" + WeatherUtil.showTimeInfo(time));
+            tvOldTime.setText("上次更新时间：" + WeatherUtil.showTimeInfo(time)+time);
 
             tvWindDirection.setText("风向     " + response.body().getHeWeather6().get(0).getNow().getWind_dir());//风向
             tvWindPower.setText("风力     " + response.body().getHeWeather6().get(0).getNow().getWind_sc() + "级");//风力
@@ -563,6 +591,41 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             ToastUtils.showShortToast(context, response.body().getHeWeather6().get(0).getStatus());
         }
 
+    }
+
+    @Override
+    public void getAirNowCityResult(Response<AirNowCityBean> response) {
+        dismissLoadingDialog();//关闭弹窗
+        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
+            AirNowCityBean.HeWeather6Bean.AirNowCitydata data = response.body().getHeWeather6().get(0).getAir_now_city();
+            if (!ObjectUtils.isEmpty(data) && data != null) {
+                //污染指数
+                rpbAqi.setMaxProgress(500);//最大进度，用于计算
+                rpbAqi.setMinText("0");//设置显示最小值
+                rpbAqi.setMinTextSize(32f);
+                rpbAqi.setMaxText("500");//设置显示最大值
+                rpbAqi.setMaxTextSize(32f);
+                rpbAqi.setProgress(Float.valueOf(data.getAqi()));//当前进度
+                rpbAqi.setArcBgColor(getResources().getColor(R.color.arc_bg_color));//圆弧的颜色
+                rpbAqi.setProgressColor(getResources().getColor(R.color.arc_progress_color));//进度圆弧的颜色
+                rpbAqi.setFirstText(data.getQlty());//空气质量描述  取值范围：优，良，轻度污染，中度污染，重度污染，严重污染
+                rpbAqi.setFirstTextSize(44f);
+                rpbAqi.setSecondText(data.getAqi());//空气质量值
+                rpbAqi.setSecondTextSize(64f);
+                rpbAqi.setMinText("0");
+                rpbAqi.setMinTextColor(getResources().getColor(R.color.arc_progress_color));
+
+                tvPm10.setText(data.getPm10());//PM10
+                tvPm25.setText(data.getPm25());//PM2.5
+                tvNo2.setText(data.getNo2());//二氧化氮
+                tvSo2.setText(data.getSo2());//二氧化硫
+                tvO3.setText(data.getO3());//臭氧
+                tvCo.setText(data.getCo());//一氧化碳
+            }
+
+        } else {
+            ToastUtils.showShortToast(context, response.body().getHeWeather6().get(0).getStatus());
+        }
     }
 
 
