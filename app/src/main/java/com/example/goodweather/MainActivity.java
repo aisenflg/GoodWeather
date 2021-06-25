@@ -1,16 +1,22 @@
 package com.example.goodweather;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,10 +45,14 @@ import com.example.goodweather.bean.LifeStyleBean;
 import com.example.goodweather.bean.TodayBean;
 import com.example.goodweather.bean.WeatherForecastBean;
 import com.example.goodweather.contract.WeatherContract;
+import com.example.goodweather.ui.BackgroundManagerActivity;
+import com.example.goodweather.utils.Constant;
+import com.example.goodweather.utils.SPUtils;
 import com.example.goodweather.utils.StatusBarUtil;
 import com.example.goodweather.utils.ToastUtils;
 import com.example.goodweather.utils.WeatherUtil;
 import com.example.mvplibrary.mvp.MvpActivity;
+import com.example.mvplibrary.utils.AnimationUtil;
 import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.ObjectUtils;
 import com.example.mvplibrary.view.RoundProgressBar;
@@ -105,8 +115,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     TextView tvWindDirection;//风向
     @BindView(R.id.tv_wind_power)
     TextView tvWindPower;//风力
-    @BindView(R.id.iv_city_select)
-    ImageView ivCitySelect;
+    @BindView(R.id.iv_add)
+    ImageView ivAdd;
     @BindView(R.id.refresh)
     SmartRefreshLayout refresh;//刷新布局
     @BindView(R.id.iv_location)
@@ -151,7 +161,14 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     private AreaAdapter areaAdapter;//县/区数据适配器
     private String provinceTitle;//标题
     private LiWindow liWindow;//自定义弹窗
-
+    //右上角的弹窗
+    private PopupWindow mPopupWindow;
+    private AnimationUtil mAnimationUtil;
+    private float bgAlpha = 1f;
+    private boolean bright = false;
+    private static final long DURATION = 500;//0.5s
+    private static final float START_ALPHA = 0.7f;//开始透明读
+    private static final float END_ALPHA = 1f;//结束透明度
     //数据初始化  主线程，onCreate方法可以删除了，把里面的代码移动这个initData下面
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -161,12 +178,17 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         initList();
         rxPermissions = new RxPermissions(this);//实例化这个权限请求框架，否则会报错
         permissionVersion();//权限判断
+        //禁用上拉刷新
+        refresh.setEnableLoadMore(false);
+        //初始化弹窗
+        mPopupWindow = new PopupWindow(this);
+        mAnimationUtil = new AnimationUtil();
         setListener();
 
     }
 
     private void setListener() {
-        ivCitySelect.setOnClickListener(this);
+        ivAdd.setOnClickListener(this);
     }
 
     //绑定布局文件
@@ -239,6 +261,88 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         mLocationClient.setLocOption(option);
         //启动定位
         mLocationClient.start();
+
+    }
+
+    /**
+     * 更多功能弹窗
+     */
+    private void showAddWindow(){
+        // 设置布局文件
+        mPopupWindow.setContentView(LayoutInflater.from(this).inflate(R.layout.window_add, null));// 为了避免部分机型不显示，我们需要重新设置一下宽高
+        mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable(0x0000));// 设置pop透明效果
+        mPopupWindow.setAnimationStyle(R.style.pop_add);// 设置pop出入动画
+        mPopupWindow.setFocusable(true);// 设置pop获取焦点，如果为false点击返回按钮会退出当前Activity，如果pop中有Editor的话，focusable必须要为true
+        mPopupWindow.setTouchable(true);// 设置pop可点击，为false点击事件无效，默认为true
+        mPopupWindow.setOutsideTouchable(true);// 设置点击pop外侧消失，默认为false；在focusable为true时点击外侧始终消失
+        mPopupWindow.showAsDropDown(ivAdd, -100, 0);// 相对于 + 号正下面，同时可以设置偏移量
+        // 设置pop关闭监听，用于改变背景透明度
+        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {//关闭弹窗
+            @Override
+            public void onDismiss() {
+                toggleBright();
+            }
+        });
+        //绑定布局中的控件
+        TextView changeCity = mPopupWindow.getContentView().findViewById(R.id.tv_change_city);
+        TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);
+        TextView more = mPopupWindow.getContentView().findViewById(R.id.tv_more);
+        changeCity.setOnClickListener(view -> {//切换城市
+            showCityWindow();
+            mPopupWindow.dismiss();
+        });
+        changeBg.setOnClickListener(view -> {//切换背景
+            SPUtils.putString(Constant.DISTRICT,district,context);
+            SPUtils.putString(Constant.CITY,city,context);
+            startActivity(new Intent(MainActivity.this, BackgroundManagerActivity.class));
+            mPopupWindow.dismiss();
+        });
+        more.setOnClickListener(view -> {//更多功能
+            ToastUtils.showShortToast(context,"如果你有什么好的建议，可以博客留言哦！");
+            mPopupWindow.dismiss();
+        });
+
+    }
+
+
+    /**
+     * 计算动画时间
+     */
+    private void toggleBright(){
+        // 三个参数分别为：起始值 结束值 时长，那么整个动画回调过来的值就是从0.5f--1f的
+        mAnimationUtil.setValueAnimator(START_ALPHA, END_ALPHA, DURATION);
+        mAnimationUtil.addUpdateListener(new AnimationUtil.UpdateListener() {
+            @Override
+            public void progress(float progress) {
+                // 此处系统会根据上述三个值，计算每次回调的值是多少，我们根据这个值来改变透明度
+                bgAlpha = bright ? progress : (START_ALPHA + END_ALPHA - progress);
+                backgroundAlpha(bgAlpha);
+            }
+        });
+        mAnimationUtil.addEndListner(new AnimationUtil.EndListener() {
+            @Override
+            public void endUpdate(Animator animator) {
+                // 在一次动画结束的时候，翻转状态
+                bright = !bright;
+            }
+        });
+        mAnimationUtil.startAnimator();
+
+    }
+
+    /**
+     * 此方法用于改变透明度,达到"变暗"的效果
+     */
+    private void backgroundAlpha(float bgAlpha){
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        // 0.0-1.0
+        lp.alpha = bgAlpha;
+        getWindow().setAttributes(lp);
+        // everything behind this window will be dimmed.
+        // 此方法用来设置浮动层，防止部分手机变暗无效
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
     }
 
@@ -418,11 +522,13 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_city_select:
-                showCityWindow();
+            case R.id.iv_add:
+                showAddWindow();//更多功能弹窗
+                toggleBright();//计算动画时间
                 break;
         }
     }
+
 
     /**
      * 定位结果返回
@@ -442,8 +548,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             mPresent.weatherForecast(context, district);
             //获取生活指数有
             mPresent.lifeStyle(context, district);
-            //获取必应每日一图
-            mPresent.biying(context);
+//            //获取必应每日一图
+//            mPresent.biying(context);
             //逐小时天气预报
             mPresent.getHourly(context,district);
             //获取空气质量数据
@@ -465,6 +571,86 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
 
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showLoadingDialog();//在数据请求之前放在加载等待弹窗，返回结果后关闭弹窗
+        if(district == null){
+            //取出缓存
+            district = SPUtils.getString(Constant.DISTRICT,"",context);
+            city = SPUtils.getString(Constant.CITY,"",context);
+        }
+
+        isOpenChangeBg();//是否开启了切换背景
+
+        //获取今天的天气数据
+        mPresent.todayWeather(context, district);
+        //获取天气预报数据
+        mPresent.weatherForecast(context, district);
+        //获取生活指数数据
+        mPresent.lifeStyle(context, district);
+        //获取逐小时天气数据
+        mPresent.getHourly(context, district);
+        //获取空气质量数据
+        mPresent.getAirNowCityResult(context, city);
+    }
+
+    //判断是否开启了切换背景，没有开启则用默认的背景
+    private void isOpenChangeBg() {
+        boolean isEverydayImg = SPUtils.getBoolean(Constant.EVERYDAY_IMG,false,context);//每日图片
+        boolean isImgList = SPUtils.getBoolean(Constant.IMG_LIST,false,context);//图片列表
+        boolean isCustomImg = SPUtils.getBoolean(Constant.CUSTOM_IMG,false,context);//手动定义
+        //因为只有有一个为true，其他两个就都会是false,所以可以一个一个的判断
+        if(isEverydayImg != true && isImgList != true && isCustomImg != true){
+            //当所有开关都没有打开的时候用默认的图片
+            bg.setBackgroundResource(R.mipmap.pic_bg);
+        }else {
+            if(isEverydayImg!=false){//开启每日一图
+                mPresent.biying(context);
+            }else if(isImgList!=false){//开启图片列表
+                int position = SPUtils.getInt(Constant.IMG_POSITION,-1,context);
+                switch (position){
+                    case 0:
+                        bg.setBackgroundResource(R.drawable.img_1);
+                        break;
+                    case 1:
+                        bg.setBackgroundResource(R.drawable.img_2);
+                        break;
+                    case 2:
+                        bg.setBackgroundResource(R.drawable.img_3);
+                        break;
+                    case 3:
+                        bg.setBackgroundResource(R.drawable.img_4);
+                        break;
+                    case 4:
+                        bg.setBackgroundResource(R.drawable.img_5);
+                        break;
+                    case 5:
+                        bg.setBackgroundResource(R.drawable.img_6);
+                        break;
+                }
+            }else if(isCustomImg != false){
+                String imgPath = SPUtils.getString(Constant.CUSTOM_IMG_PATH,"",context);
+                Glide.with(context)
+                        .asBitmap()
+                        .load(imgPath)
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                                bg.setBackground(drawable);
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                                ToastUtils.showShortToast(context, "数据为空");
+                            }
+                        });
+            }
+        }
+    }
+
 
     //查询当天天气，请求成功后的数据返回
     @Override
