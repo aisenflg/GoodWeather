@@ -2,7 +2,8 @@ package com.example.goodweather.bean;
 
 import java.util.List;
 
-public class WeatherForecastBean {
+public class WeatherBean {
+
 
     private List<HeWeather6Bean> HeWeather6;
 
@@ -15,17 +16,13 @@ public class WeatherForecastBean {
     }
 
     public static class HeWeather6Bean {
-        /**
-         * basic : {"cid":"CN101280604","location":"南山","parent_city":"深圳","admin_area":"广东省","cnty":"中国","lat":"22.53122139","lon":"113.9294281","tz":"+8.00"}
-         * update : {"loc":"2021-03-31 16:35","utc":"2021-03-31 08:35"}
-         * status : ok
-         * daily_forecast : [{"cond_code_d":"101","cond_code_n":"101","cond_txt_d":"多云","cond_txt_n":"多云","date":"2021-03-31","hum":"85","mr":"21:27","ms":"08:07","pcpn":"0.0","pop":"13","pres":"1003","sr":"06:16","ss":"18:39","tmp_max":"30","tmp_min":"24","uv_index":"10","vis":"24","wind_deg":"0","wind_dir":"北风","wind_sc":"1-2","wind_spd":"3"},{"cond_code_d":"101","cond_code_n":"101","cond_txt_d":"多云","cond_txt_n":"多云","date":"2021-04-01","hum":"87","mr":"22:33","ms":"08:53","pcpn":"0.0","pop":"13","pres":"1005","sr":"06:15","ss":"18:40","tmp_max":"30","tmp_min":"25","uv_index":"4","vis":"24","wind_deg":"0","wind_dir":"北风","wind_sc":"1-2","wind_spd":"3"},{"cond_code_d":"101","cond_code_n":"101","cond_txt_d":"多云","cond_txt_n":"多云","date":"2021-04-02","hum":"88","mr":"23:39","ms":"09:44","pcpn":"0.0","pop":"7","pres":"1007","sr":"06:14","ss":"18:40","tmp_max":"31","tmp_min":"25","uv_index":"11","vis":"24","wind_deg":"0","wind_dir":"北风","wind_sc":"1-2","wind_spd":"3"}]
-         */
-
         private BasicBean basic;
         private UpdateBean update;
         private String status;
+        private NowBean now;
         private List<DailyForecastBean> daily_forecast;
+        private List<HourlyBean> hourly;
+        private List<LifestyleBean> lifestyle;
 
         public BasicBean getBasic() {
             return basic;
@@ -51,6 +48,14 @@ public class WeatherForecastBean {
             this.status = status;
         }
 
+        public NowBean getNow() {
+            return now;
+        }
+
+        public void setNow(NowBean now) {
+            this.now = now;
+        }
+
         public List<DailyForecastBean> getDaily_forecast() {
             return daily_forecast;
         }
@@ -59,18 +64,23 @@ public class WeatherForecastBean {
             this.daily_forecast = daily_forecast;
         }
 
-        public static class BasicBean {
-            /**
-             * cid : CN101280604
-             * location : 南山
-             * parent_city : 深圳
-             * admin_area : 广东省
-             * cnty : 中国
-             * lat : 22.53122139
-             * lon : 113.9294281
-             * tz : +8.00
-             */
+        public List<HourlyBean> getHourly() {
+            return hourly;
+        }
 
+        public void setHourly(List<HourlyBean> hourly) {
+            this.hourly = hourly;
+        }
+
+        public List<LifestyleBean> getLifestyle() {
+            return lifestyle;
+        }
+
+        public void setLifestyle(List<LifestyleBean> lifestyle) {
+            this.lifestyle = lifestyle;
+        }
+
+        public static class BasicBean {
             private String cid;
             private String location;
             private String parent_city;
@@ -146,11 +156,6 @@ public class WeatherForecastBean {
         }
 
         public static class UpdateBean {
-            /**
-             * loc : 2021-03-31 16:35
-             * utc : 2021-03-31 08:35
-             */
-
             private String loc;
             private String utc;
 
@@ -171,31 +176,127 @@ public class WeatherForecastBean {
             }
         }
 
-        public static class DailyForecastBean {
-            /**
-             * cond_code_d : 101
-             * cond_code_n : 101
-             * cond_txt_d : 多云
-             * cond_txt_n : 多云
-             * date : 2021-03-31
-             * hum : 85
-             * mr : 21:27
-             * ms : 08:07
-             * pcpn : 0.0
-             * pop : 13
-             * pres : 1003
-             * sr : 06:16
-             * ss : 18:39
-             * tmp_max : 30
-             * tmp_min : 24
-             * uv_index : 10
-             * vis : 24
-             * wind_deg : 0
-             * wind_dir : 北风
-             * wind_sc : 1-2
-             * wind_spd : 3
-             */
+        public static class NowBean {
+            private String cloud;
+            private String cond_code;
+            private String cond_txt;
+            private String fl;
+            private String hum;
+            private String pcpn;
+            private String pres;
+            private String tmp;
+            private String vis;
+            private String wind_deg;
+            private String wind_dir;
+            private String wind_sc;
+            private String wind_spd;
 
+            public String getCloud() {
+                return cloud;
+            }
+
+            public void setCloud(String cloud) {
+                this.cloud = cloud;
+            }
+
+            public String getCond_code() {
+                return cond_code;
+            }
+
+            public void setCond_code(String cond_code) {
+                this.cond_code = cond_code;
+            }
+
+            public String getCond_txt() {
+                return cond_txt;
+            }
+
+            public void setCond_txt(String cond_txt) {
+                this.cond_txt = cond_txt;
+            }
+
+            public String getFl() {
+                return fl;
+            }
+
+            public void setFl(String fl) {
+                this.fl = fl;
+            }
+
+            public String getHum() {
+                return hum;
+            }
+
+            public void setHum(String hum) {
+                this.hum = hum;
+            }
+
+            public String getPcpn() {
+                return pcpn;
+            }
+
+            public void setPcpn(String pcpn) {
+                this.pcpn = pcpn;
+            }
+
+            public String getPres() {
+                return pres;
+            }
+
+            public void setPres(String pres) {
+                this.pres = pres;
+            }
+
+            public String getTmp() {
+                return tmp;
+            }
+
+            public void setTmp(String tmp) {
+                this.tmp = tmp;
+            }
+
+            public String getVis() {
+                return vis;
+            }
+
+            public void setVis(String vis) {
+                this.vis = vis;
+            }
+
+            public String getWind_deg() {
+                return wind_deg;
+            }
+
+            public void setWind_deg(String wind_deg) {
+                this.wind_deg = wind_deg;
+            }
+
+            public String getWind_dir() {
+                return wind_dir;
+            }
+
+            public void setWind_dir(String wind_dir) {
+                this.wind_dir = wind_dir;
+            }
+
+            public String getWind_sc() {
+                return wind_sc;
+            }
+
+            public void setWind_sc(String wind_sc) {
+                this.wind_sc = wind_sc;
+            }
+
+            public String getWind_spd() {
+                return wind_spd;
+            }
+
+            public void setWind_spd(String wind_spd) {
+                this.wind_spd = wind_spd;
+            }
+        }
+
+        public static class DailyForecastBean {
             private String cond_code_d;
             private String cond_code_n;
             private String cond_txt_d;
@@ -384,6 +485,156 @@ public class WeatherForecastBean {
 
             public void setWind_spd(String wind_spd) {
                 this.wind_spd = wind_spd;
+            }
+        }
+
+        public static class HourlyBean {
+            private String cloud;
+            private String cond_code;
+            private String cond_txt;
+            private String dew;
+            private String hum;
+            private String pop;
+            private String pres;
+            private String time;
+            private String tmp;
+            private String wind_deg;
+            private String wind_dir;
+            private String wind_sc;
+            private String wind_spd;
+
+            public String getCloud() {
+                return cloud;
+            }
+
+            public void setCloud(String cloud) {
+                this.cloud = cloud;
+            }
+
+            public String getCond_code() {
+                return cond_code;
+            }
+
+            public void setCond_code(String cond_code) {
+                this.cond_code = cond_code;
+            }
+
+            public String getCond_txt() {
+                return cond_txt;
+            }
+
+            public void setCond_txt(String cond_txt) {
+                this.cond_txt = cond_txt;
+            }
+
+            public String getDew() {
+                return dew;
+            }
+
+            public void setDew(String dew) {
+                this.dew = dew;
+            }
+
+            public String getHum() {
+                return hum;
+            }
+
+            public void setHum(String hum) {
+                this.hum = hum;
+            }
+
+            public String getPop() {
+                return pop;
+            }
+
+            public void setPop(String pop) {
+                this.pop = pop;
+            }
+
+            public String getPres() {
+                return pres;
+            }
+
+            public void setPres(String pres) {
+                this.pres = pres;
+            }
+
+            public String getTime() {
+                return time;
+            }
+
+            public void setTime(String time) {
+                this.time = time;
+            }
+
+            public String getTmp() {
+                return tmp;
+            }
+
+            public void setTmp(String tmp) {
+                this.tmp = tmp;
+            }
+
+            public String getWind_deg() {
+                return wind_deg;
+            }
+
+            public void setWind_deg(String wind_deg) {
+                this.wind_deg = wind_deg;
+            }
+
+            public String getWind_dir() {
+                return wind_dir;
+            }
+
+            public void setWind_dir(String wind_dir) {
+                this.wind_dir = wind_dir;
+            }
+
+            public String getWind_sc() {
+                return wind_sc;
+            }
+
+            public void setWind_sc(String wind_sc) {
+                this.wind_sc = wind_sc;
+            }
+
+            public String getWind_spd() {
+                return wind_spd;
+            }
+
+            public void setWind_spd(String wind_spd) {
+                this.wind_spd = wind_spd;
+            }
+        }
+
+        public static class LifestyleBean {
+            private String type;
+            private String brf;
+            private String txt;
+
+            public String getType() {
+                return type;
+            }
+
+            public void setType(String type) {
+                this.type = type;
+            }
+
+            public String getBrf() {
+                return brf;
+            }
+
+            public void setBrf(String brf) {
+                this.brf = brf;
+            }
+
+            public String getTxt() {
+                return txt;
+            }
+
+            public void setTxt(String txt) {
+                this.txt = txt;
             }
         }
     }

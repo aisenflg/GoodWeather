@@ -491,6 +491,15 @@
                                 android:text="生活建议"
                                 android:textColor="#FFF"
                                 android:textSize="18sp" />
+                            <!--紫外线-->
+                            <TextView
+                                android:id="@+id/tv_uv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="紫外线："
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/sp_14" />
                             <!--舒适度-->
                             <TextView
                                 android:id="@+id/tv_comf"

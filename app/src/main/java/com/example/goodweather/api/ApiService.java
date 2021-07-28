@@ -2,10 +2,7 @@ package com.example.goodweather.api;
 
 import com.example.goodweather.bean.AirNowCityBean;
 import com.example.goodweather.bean.BiYingImgBean;
-import com.example.goodweather.bean.HourlyBean;
-import com.example.goodweather.bean.LifeStyleBean;
-import com.example.goodweather.bean.TodayBean;
-import com.example.goodweather.bean.WeatherForecastBean;
+import com.example.goodweather.bean.WeatherBean;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -25,40 +22,13 @@ public interface ApiService {
      * @param location  区/县
      * @return
      */
-    @GET("/s6/weather/now?key=756dc8a018744a75a6200810559528a9")
-    Call<TodayBean> getTodayWeather(@Query("location") String location);
 
-    /**
-     * 未来3-7天天气预报
-     * @param location
-     * @return
-     */
-    @GET("/s6/weather/forecast?key=756dc8a018744a75a6200810559528a9")
-    Call<WeatherForecastBean> getWeatherForecast(@Query("location") String location);
-
-
-    /**
-     * 生活指数
-     * @param location
-     * @return
-     */
-    @GET("/s6/weather/lifestyle?key=756dc8a018744a75a6200810559528a9")
-    Call<LifeStyleBean> getLifeStyle(@Query("location") String location);
 
     /**
      * 必应每日一图
      */
     @GET("/HPImageArchive.aspx?format=js&idx=0&n=1")
     Call<BiYingImgBean> biying();
-
-    /**
-     * 逐小时预报
-     * @param location
-     * @return
-     */
-    @GET("/s6/weather/hourly?key=756dc8a018744a75a6200810559528a9")
-    Call<HourlyBean> getHourly(@Query("location") String location);
-
 
     /**
      * 空气质量数据,这个location要传入市的参数,不再是区/县,否则会提示permission denied 无权限访问
@@ -68,5 +38,6 @@ public interface ApiService {
     @GET("/s6/air/now?key=756dc8a018744a75a6200810559528a9")
     Call<AirNowCityBean> getAirNowCity(@Query("location") String location);
 
-
+    @GET("/s6/weather?key=756dc8a018744a75a6200810559528a9")
+    Call<WeatherBean>getWeatherData(@Query("location") String location);
 }
