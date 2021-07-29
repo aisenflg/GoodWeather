@@ -2,6 +2,7 @@ package com.example.goodweather.api;
 
 import com.example.goodweather.bean.AirNowCityBean;
 import com.example.goodweather.bean.BiYingImgBean;
+import com.example.goodweather.bean.SearchCityBean;
 import com.example.goodweather.bean.WeatherBean;
 
 import retrofit2.Call;
@@ -39,5 +40,8 @@ public interface ApiService {
     Call<AirNowCityBean> getAirNowCity(@Query("location") String location);
 
     @GET("/s6/weather?key=756dc8a018744a75a6200810559528a9")
-    Call<WeatherBean>getWeatherData(@Query("location") String location);
+    Call<WeatherBean> getWeatherData(@Query("location") String location);
+
+    @GET("/find?key=3086e91d66c04ce588a7f538f917c7f4&group=cn&number=10")
+    Call<SearchCityBean> searchCity(@Query("location") String location);
 }
