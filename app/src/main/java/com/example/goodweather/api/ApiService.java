@@ -2,6 +2,7 @@ package com.example.goodweather.api;
 
 import com.example.goodweather.bean.AirNowCityBean;
 import com.example.goodweather.bean.BiYingImgBean;
+import com.example.goodweather.bean.HotCityBean;
 import com.example.goodweather.bean.SearchCityBean;
 import com.example.goodweather.bean.WeatherBean;
 
@@ -39,9 +40,26 @@ public interface ApiService {
     @GET("/s6/air/now?key=756dc8a018744a75a6200810559528a9")
     Call<AirNowCityBean> getAirNowCity(@Query("location") String location);
 
+    /**
+     * 天气预报数据
+     * @param location
+     * @return
+     */
     @GET("/s6/weather?key=756dc8a018744a75a6200810559528a9")
     Call<WeatherBean> getWeatherData(@Query("location") String location);
 
+    /**
+     * 搜索城市
+     * @param location
+     * @return
+     */
     @GET("/find?key=3086e91d66c04ce588a7f538f917c7f4&group=cn&number=10")
     Call<SearchCityBean> searchCity(@Query("location") String location);
+
+    /**
+     * 海外热门城市
+     */
+    @GET("/top?key=756dc8a018744a75a6200810559528a9&group=overseas&number=50&lang=zh")
+    Call<HotCityBean> hotCity();
+
 }

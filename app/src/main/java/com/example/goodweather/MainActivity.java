@@ -44,6 +44,7 @@ import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.ui.BackgroundManagerActivity;
+import com.example.goodweather.ui.HotCityActivity;
 import com.example.goodweather.ui.SearchCityActivity;
 import com.example.goodweather.utils.CodeToStringUtils;
 import com.example.goodweather.utils.Constant;
@@ -395,9 +396,10 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             }
         });
         //绑定布局中的控件
-        TextView changeCity = mPopupWindow.getContentView().findViewById(R.id.tv_change_city);
-        TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);
-        TextView searchCity = mPopupWindow.getContentView().findViewById(R.id.tv_search_city);
+        TextView changeCity = mPopupWindow.getContentView().findViewById(R.id.tv_change_city);//切换城市
+        TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);  //切换背景
+        TextView searchCity = mPopupWindow.getContentView().findViewById(R.id.tv_search_city);  //搜索城市
+        TextView hotCity = mPopupWindow.getContentView().findViewById(R.id.tv_hot_city);  //热门城市
         TextView more = mPopupWindow.getContentView().findViewById(R.id.tv_more);
         changeCity.setOnClickListener(view -> {//切换城市
             showCityWindow();
@@ -416,6 +418,14 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             public void onClick(View v) {
                 SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN,true,context);//缓存标识
                 startActivity(new Intent(context, SearchCityActivity.class));
+                mPopupWindow.dismiss();
+            }
+        });
+        hotCity.setOnClickListener(new View.OnClickListener() {//搜索城市
+            @Override
+            public void onClick(View v) {
+                SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN,true,context);//缓存标识
+                startActivity(new Intent(context, HotCityActivity.class));
                 mPopupWindow.dismiss();
             }
         });

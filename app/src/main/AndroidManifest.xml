@@ -20,8 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoodWeather">
-        <activity android:name=".ui.BackgroundManagerActivity"></activity>
-        <!-- 百度定位AK -->
+        <activity android:name=".ui.HotCityWeatherActivity"></activity>
+        <activity android:name=".ui.HotCityActivity" />
+        <activity android:name=".ui.BackgroundManagerActivity" /> <!-- 百度定位AK -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="rpodShLy3zlXwREmXfX51FziwXPVGTOS" /> <!-- 百度定位服务  这个服务也是放在application标签下的 -->
@@ -37,8 +38,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.SearchCityActivity" />
 
-        <activity android:name=".ui.SearchCityActivity"/>
     </application>
 
 </manifest>
