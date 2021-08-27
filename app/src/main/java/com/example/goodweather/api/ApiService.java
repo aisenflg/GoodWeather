@@ -59,7 +59,7 @@ public interface ApiService {
     /**
      * 海外热门城市
      */
-    @GET("/top?key=756dc8a018744a75a6200810559528a9&group=overseas&number=50&lang=zh")
-    Call<HotCityBean> hotCity();
+    @GET("/top?key=756dc8a018744a75a6200810559528a9&number=50&lang=zh")
+    Call<HotCityBean> hotCity(@Query("group") String group);
 
 }

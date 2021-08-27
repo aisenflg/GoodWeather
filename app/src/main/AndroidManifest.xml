@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoodWeather">
-        <activity android:name=".ui.HotCityWeatherActivity"></activity>
+        <activity android:name=".ui.CommonlyUsedCityActivity"></activity>
+        <activity android:name=".ui.HotCityWeatherActivity" />
         <activity android:name=".ui.HotCityActivity" />
         <activity android:name=".ui.BackgroundManagerActivity" /> <!-- 百度定位AK -->
         <meta-data
@@ -39,7 +40,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.SearchCityActivity" />
-
     </application>
 
 </manifest>

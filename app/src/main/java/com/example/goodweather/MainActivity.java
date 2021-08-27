@@ -44,6 +44,7 @@ import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.ui.BackgroundManagerActivity;
+import com.example.goodweather.ui.CommonlyUsedCityActivity;
 import com.example.goodweather.ui.HotCityActivity;
 import com.example.goodweather.ui.SearchCityActivity;
 import com.example.goodweather.utils.CodeToStringUtils;
@@ -285,7 +286,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         tv_pcpn.setText(data.getPcpn());
         tv_pop.setText(data.getPop() + "%");
         tv_vis.setText(data.getVis());
-        liWindow.showCenterPopupWindow(view, SizeUtils.dp2px(context, 300), SizeUtils.dp2px(context, 500));
+        liWindow.showCenterPopupWindow(view, SizeUtils.dp2px(context, 300), SizeUtils.dp2px(context, 500),true);
 
     }
 
@@ -320,7 +321,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         tv_pop.setText(data.getPop() + "%");
         tv_dew.setText(data.getDew() + "℃");
         tv_cloud.setText(data.getCloud());
-        liWindow.showCenterPopupWindow(view, SizeUtils.dp2px(context, 300), SizeUtils.dp2px(context, 400));
+        liWindow.showCenterPopupWindow(view, SizeUtils.dp2px(context, 300), SizeUtils.dp2px(context, 400),true);
     }
 
     //绑定Presenter ，这里不绑定会报错
@@ -400,6 +401,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);  //切换背景
         TextView searchCity = mPopupWindow.getContentView().findViewById(R.id.tv_search_city);  //搜索城市
         TextView hotCity = mPopupWindow.getContentView().findViewById(R.id.tv_hot_city);  //热门城市
+        TextView oftenCity = mPopupWindow.getContentView().findViewById(R.id.tv_often_city);  //常用城市
         TextView more = mPopupWindow.getContentView().findViewById(R.id.tv_more);
         changeCity.setOnClickListener(view -> {//切换城市
             showCityWindow();
@@ -421,11 +423,19 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
                 mPopupWindow.dismiss();
             }
         });
-        hotCity.setOnClickListener(new View.OnClickListener() {//搜索城市
+        hotCity.setOnClickListener(new View.OnClickListener() {//热门城市
             @Override
             public void onClick(View v) {
                 SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN,true,context);//缓存标识
                 startActivity(new Intent(context, HotCityActivity.class));
+                mPopupWindow.dismiss();
+            }
+        });
+        oftenCity.setOnClickListener(new View.OnClickListener() {//常用城市
+            @Override
+            public void onClick(View v) {
+                SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN,true,context);//缓存标识
+                startActivity(new Intent(context, CommonlyUsedCityActivity.class));
                 mPopupWindow.dismiss();
             }
         });

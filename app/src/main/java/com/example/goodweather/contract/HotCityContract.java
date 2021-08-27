@@ -1,5 +1,7 @@
 package com.example.goodweather.contract;
 
+import android.content.Context;
+
 import com.example.goodweather.api.ApiService;
 import com.example.goodweather.bean.HotCityBean;
 import com.example.mvplibrary.base.BasePresenter;
@@ -18,9 +20,9 @@ public class HotCityContract {
     public static class HotCityPresenter extends BasePresenter<IHotCityView>{
 
 
-        public void hotCity(){
+        public void hotCity(Context context,String group){
             ApiService mService = ServiceGenerator.createService(ApiService.class,2);
-            mService.hotCity().enqueue(new Callback<HotCityBean>() {
+            mService.hotCity(group).enqueue(new Callback<HotCityBean>() {
                 @Override
                 public void onResponse(Call<HotCityBean> call, Response<HotCityBean> response) {
                     if (getView() != null) {
