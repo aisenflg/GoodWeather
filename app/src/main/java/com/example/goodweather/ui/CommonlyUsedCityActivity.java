@@ -16,7 +16,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.goodweather.R;
 import com.example.goodweather.adapter.CommonlyCityAdapter;
 import com.example.goodweather.adapter.CommonlyCityAddAdapter;
-import com.example.goodweather.bean.SearchCityBean;
+import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.contract.SearchCityContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.utils.CodeToStringUtils;
@@ -53,7 +53,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
     LinearLayout layNormal;//常用城市为空时展示的布局
 
     CommonlyCityAdapter mAdapter;//常用城市列表适配器
-    List<SearchCityBean.HeWeather6Bean.BasicBean> mList = new ArrayList<>();//数据源
+    List<NewSearchCityResponse.LocationBean> mList = new ArrayList<>();//数据源
     CommonlyCityAddAdapter mAdapterAdd;//搜索城市列表适配器
 
     List<ResidentCity> cityList;//常用城市列表
@@ -83,14 +83,15 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
         initEdit();//初始化输入框
     }
 
+
     @Override
-    public void getSearchCityResult(Response<SearchCityBean> response) {
+    public void getNewSearchCityResult(Response<NewSearchCityResponse> response) {
         dismissLoadingDialog();
-        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
-            if (response.body().getHeWeather6().get(0).getBasic().size() > 0) {
+        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
+            if (response.body().getLocation() != null && response.body().getLocation().size() > 0) {
                 rvCommonlyUsed.setVisibility(View.GONE);//隐藏常用城市列表
                 mList.clear();
-                mList.addAll(response.body().getHeWeather6().get(0).getBasic());
+                mList.addAll(response.body().getLocation());
                 mAdapterAdd.notifyDataSetChanged();
                 rvSearch.setVisibility(View.VISIBLE);//显示搜索城市列表
                 layNormal.setVisibility(View.GONE);
@@ -99,9 +100,8 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
             }
 
         } else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getHeWeather6().get(0).getStatus()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
         }
-
     }
 
     @Override
@@ -172,18 +172,18 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
      */
     private void QueryWeather(int position) {
         ResidentCity residentCity = new ResidentCity();
-        residentCity.setLocation(mList.get(position).getLocation());//地区／城市名称
-        residentCity.setParent_city(mList.get(position).getParent_city());//该地区／城市的上级城市
-        residentCity.setAdmin_area(mList.get(position).getAdmin_area());//该地区／城市所属行政区域
-        residentCity.setCnty(mList.get(position).getCnty());//该地区／城市所属国家名称
+        residentCity.setLocation(mList.get(position).getName());//地区／城市名称
+        residentCity.setParent_city(mList.get(position).getAdm2());//该地区／城市的上级城市
+        residentCity.setAdmin_area(mList.get(position).getAdm1());//该地区／城市所属行政区域
+        residentCity.setCnty(mList.get(position).getCountry());//该地区／城市所属国家名称
 
         residentCity.save();//保存数据到数据库中
         if (residentCity.save()) {//保存成功
             //然后使用之前在搜索城市天气中写好的代码
-            SPUtils.putString(Constant.LOCATION, mList.get(position).getLocation(), context);
+            SPUtils.putString(Constant.LOCATION, mList.get(position).getName(), context);
             //发送消息
-            EventBus.getDefault().post(new SearchCityEvent(mList.get(position).getLocation(),
-                    mList.get(position).getParent_city()));
+            EventBus.getDefault().post(new SearchCityEvent(mList.get(position).getName(),
+                    mList.get(position).getAdm2()));
             finish();
         } else {//保存失败
             ToastUtils.showShortToast(context, "添加城市失败");
@@ -226,7 +226,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
                 if (!s.toString().equals("")) {//输入后，显示清除按钮
                     ivClearSearch.setVisibility(View.VISIBLE);
                     mAdapterAdd.changTxColor(s.toString());
-                    mPresent.searchCity(context, s.toString());//开始搜索
+                    mPresent.newSearchCity(s.toString());//开始搜索
                 } else {//隐藏和显示控件
                     initHideOrShow();
 

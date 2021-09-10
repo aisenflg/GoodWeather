@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.goodweather.R;
 import com.example.goodweather.adapter.SearchCityAdapter;
-import com.example.goodweather.bean.SearchCityBean;
+import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.contract.SearchCityContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.utils.CodeToStringUtils;
@@ -73,7 +73,7 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
     ImageView ivArrow;//超过三行就会出现，展开显示更多
     @BindView(R.id.ll_history_content)
     LinearLayout llHistoryContent;//搜索历史主布局
-    List<SearchCityBean.HeWeather6Bean.BasicBean> mList = new ArrayList<>();//数据源
+    List<NewSearchCityResponse.LocationBean> mList = new ArrayList<>();//数据源
     SearchCityAdapter mAdapter;//适配器
 
     private RecordsDao mRecordsDao;
@@ -155,7 +155,7 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
                         showLoadingDialog();
                         //添加数据
                         mRecordsDao.addRecords(location);
-                        mPresent.searchCity(context, location);
+                        mPresent.newSearchCity(location);
                         //数据保存
                         saveHistory("history", editQuery);
                     } else {
@@ -215,10 +215,10 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
         mAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                SPUtils.putString(Constant.LOCATION, mList.get(position).getLocation(), context);
+                SPUtils.putString(Constant.LOCATION, mList.get(position).getName(), context);
                 //发送消息
-                EventBus.getDefault().post(new SearchCityEvent(mList.get(position).getLocation(),
-                        mList.get(position).getParent_city()));
+                EventBus.getDefault().post(new SearchCityEvent(mList.get(position).getName(),
+                        mList.get(position).getAdm2()));//adm2代表市
 
                 finish();
             }
@@ -286,25 +286,26 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
         return new SearchCityContract.SearchCityPresenter() ;
     }
 
-    //搜索城市历史返回
+
+
+    /**
+     * 搜索城市返回数据  V7
+     *
+     * @param response
+     */
     @Override
-    public void getSearchCityResult(Response<SearchCityBean> response) {
+    public void getNewSearchCityResult(Response<NewSearchCityResponse> response) {
         dismissLoadingDialog();
-        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
-            if (response.body().getHeWeather6().get(0).getBasic().size() > 0) {
-                mList.clear();
-                mList.addAll(response.body().getHeWeather6().get(0).getBasic());
-                mAdapter.notifyDataSetChanged();
-                runLayoutAnimation(rv);
-            } else {
-                ToastUtils.showShortToast(context, "很抱歉，未找到相应的城市");
-            }
-
+        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
+            mList.clear();
+            mList.addAll(response.body().getLocation());
+            mAdapter.notifyDataSetChanged();
+            runLayoutAnimation(rv);
         } else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getHeWeather6().get(0).getStatus()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
         }
-
     }
+
 
     private void runLayoutAnimation(RecyclerView rv) {
     }

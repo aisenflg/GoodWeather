@@ -27,6 +27,13 @@ public class ServiceGenerator {
             case 2://搜索城市
                 BASE_URL = "https://search.heweather.net";
                 break;
+            case 3://和风天气  新增
+                BASE_URL = "https://devapi.heweather.net";//V7版本接口地址
+                break;
+            case 4://搜索城市  新增
+                BASE_URL = "https://geoapi.heweather.net";//V7版本下的搜索城市地址
+                break;
+
         }
         return BASE_URL;
     }
