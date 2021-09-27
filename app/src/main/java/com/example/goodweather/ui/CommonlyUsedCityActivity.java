@@ -36,7 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 import retrofit2.Response;
 
-public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.SearchCityPresenter>implements SearchCityContract.ISearchCityView {
+public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.SearchCityPresenter> implements SearchCityContract.ISearchCityView {
 
 
     @BindView(R.id.edit_query)
@@ -124,6 +124,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
             layNormal.setVisibility(View.VISIBLE);//显示没有数据时的布局
         }
     }
+
     /**
      * 初始化常用城市列表数据
      */
@@ -156,7 +157,6 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
 
                 }
             });
-
             mAdapter.notifyDataSetChanged();
         } else {
             rvCommonlyUsed.setVisibility(View.GONE);
@@ -165,6 +165,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
 
 
     }
+
     /**
      * 添加城市列表item，点击保存数据并发送事件
      *
@@ -176,7 +177,6 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
         residentCity.setParent_city(mList.get(position).getAdm2());//该地区／城市的上级城市
         residentCity.setAdmin_area(mList.get(position).getAdm1());//该地区／城市所属行政区域
         residentCity.setCnty(mList.get(position).getCountry());//该地区／城市所属国家名称
-
         residentCity.save();//保存数据到数据库中
         if (residentCity.save()) {//保存成功
             //然后使用之前在搜索城市天气中写好的代码
@@ -189,6 +189,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
             ToastUtils.showShortToast(context, "添加城市失败");
         }
     }
+
     /**
      * 初始化搜索要添加的城市列表
      */
@@ -206,6 +207,7 @@ public class CommonlyUsedCityActivity extends MvpActivity<SearchCityContract.Sea
             }
         });
     }
+
     /**
      * 初始化搜索输入框 ,输入后马上查询数据，不需要额外点击，同时查询到数据之后隐藏默认城市列表
      */

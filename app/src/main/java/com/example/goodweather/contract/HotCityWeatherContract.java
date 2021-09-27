@@ -47,7 +47,5 @@ public class HotCityWeatherContract {
 
         void getHotCityWeatherResult(Response<WeatherBean> response);
 
-        //错误返回
-        void getDataFailed();
     }
 }

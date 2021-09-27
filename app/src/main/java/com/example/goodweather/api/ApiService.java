@@ -10,6 +10,7 @@ import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.SearchCityBean;
 import com.example.goodweather.bean.WeatherBean;
+import com.example.goodweather.bean.WorldCityResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -124,4 +125,13 @@ public interface ApiService {
                                               @Query("mode") String mode);
 
 
+
+    /**
+     * 世界城市
+     *
+     * @param range cn表示国内  world 表示全世界
+     * @return WorldCityResponse 世界城市数据返回
+     */
+    @GET("/v2/city/top?key=756dc8a018744a75a6200810559528a9&number=20")
+    Call<WorldCityResponse> worldCity(@Query("range") String range);
 }

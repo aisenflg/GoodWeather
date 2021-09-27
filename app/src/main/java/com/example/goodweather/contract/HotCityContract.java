@@ -45,7 +45,5 @@ public class HotCityContract {
 
         void getHotCityResult(Response<HotCityBean> response);
 
-        //错误返回
-        void getDataFailed();
     }
 }

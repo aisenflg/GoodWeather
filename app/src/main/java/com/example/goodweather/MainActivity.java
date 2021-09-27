@@ -1,6 +1,5 @@
 package com.example.goodweather;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -50,8 +49,8 @@ import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.ui.BackgroundManagerActivity;
 import com.example.goodweather.ui.CommonlyUsedCityActivity;
-import com.example.goodweather.ui.HotCityActivity;
 import com.example.goodweather.ui.SearchCityActivity;
+import com.example.goodweather.ui.WorldCityActivity;
 import com.example.goodweather.utils.CodeToStringUtils;
 import com.example.goodweather.utils.Constant;
 import com.example.goodweather.utils.DateUtils;
@@ -66,7 +65,6 @@ import com.example.mvplibrary.utils.SizeUtils;
 import com.example.mvplibrary.view.RoundProgressBar;
 import com.example.mvplibrary.view.WhiteWindmills;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -153,7 +151,6 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
 
     private boolean flag = true;//定位图标显示,只有定位的时候显示为true,切换城市和常用城市不显示
 
-    private RxPermissions rxPermissions;//权限请求框架
 
     //定位器
     public LocationClient mLocationClient = null;
@@ -197,8 +194,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         //ButterKnife.bind(this);
         StatusBarUtil.transparencyBar(context);//透明状态栏
         initList();
-        rxPermissions = new RxPermissions(this);//实例化这个权限请求框架，否则会报错
-        permissionVersion();//权限判断
+        startLocation();
         //禁用上拉刷新
         refresh.setEnableLoadMore(false);
         //初始化弹窗
@@ -345,29 +341,6 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
     }
 
 
-    //权限判断
-    private void permissionVersion() {
-        if (Build.VERSION.SDK_INT >= 23) {//6.0或6.0以上
-            //动态权限申请
-            permissionsRequest();
-        } else {//6.0以下
-            //发现只要权限在AndroidManifest.xml中注册过，均会认为该权限granted  提示一下即可
-            ToastUtils.showShortToast(this, "你的版本在Android6.0以下，不需要动态申请权限。");
-        }
-    }
-
-    //动态权限申请
-    private void permissionsRequest() {
-        rxPermissions.request(Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe(granted -> {
-                    if (granted) {//申请成功
-                        //得到权限之后开始定位
-                        startLocation();
-                    } else {//申请失败
-                        ToastUtils.showShortToast(this, "权限未开启");
-                    }
-                });
-    }
 
     //开始定位
     private void startLocation() {
@@ -414,9 +387,9 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
         TextView changeCity = mPopupWindow.getContentView().findViewById(R.id.tv_change_city);//切换城市
         TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);  //切换背景
         TextView searchCity = mPopupWindow.getContentView().findViewById(R.id.tv_search_city);  //搜索城市
-        TextView hotCity = mPopupWindow.getContentView().findViewById(R.id.tv_hot_city);  //热门城市
+        TextView hotCity = mPopupWindow.getContentView().findViewById(R.id.world_city);  //世界城市
         TextView oftenCity = mPopupWindow.getContentView().findViewById(R.id.tv_often_city);  //常用城市
-        TextView more = mPopupWindow.getContentView().findViewById(R.id.tv_more);
+        TextView more = mPopupWindow.getContentView().findViewById(R.id.tv_more);//世界城市
         changeCity.setOnClickListener(view -> {//切换城市
             showCityWindow();
             mPopupWindow.dismiss();
@@ -441,7 +414,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter> 
             @Override
             public void onClick(View v) {
                 SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN,true,context);//缓存标识
-                startActivity(new Intent(context, HotCityActivity.class));
+                startActivity(new Intent(context, WorldCityActivity.class));
                 mPopupWindow.dismiss();
             }
         });

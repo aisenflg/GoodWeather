@@ -220,8 +220,7 @@ public class WeatherContract {
 
         //天气数据错误返回
         void getWeatherDataFailed();
-        //错误返回
-        void getDataFailed();
+
     }
 
 }

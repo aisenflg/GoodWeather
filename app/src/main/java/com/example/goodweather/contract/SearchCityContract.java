@@ -16,7 +16,7 @@ import retrofit2.Response;
 public class SearchCityContract {
 
     public static class SearchCityPresenter extends BasePresenter<ISearchCityView> {
-        ApiService mService = ServiceGenerator.createService(ApiService.class, 2);
+
 
 
         public void newSearchCity(String location){
@@ -46,7 +46,6 @@ public class SearchCityContract {
       //搜索城市返回数据  V7
       void getNewSearchCityResult(Response<NewSearchCityResponse> response);
 
-      //错误返回
-      void getDataFailed();
+
     }
 }
