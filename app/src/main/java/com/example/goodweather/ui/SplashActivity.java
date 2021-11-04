@@ -91,6 +91,7 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void run() {
                 startActivity(new Intent(context,MainActivity.class));
+                finish();
             }
         },1000);
     }

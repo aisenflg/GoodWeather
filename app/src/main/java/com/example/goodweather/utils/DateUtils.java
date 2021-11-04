@@ -14,6 +14,25 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class DateUtils {
+
+    //时间截取
+    public static String dateSplit(String date) {//2020-08-04
+        String result = null;
+
+        String[] array = date.split("-");
+        result = array[1] + "/" + array[2];
+        return result; //08/04
+    }
+    //时间截取plus
+    public static String dateSplitPlus(String date) {//2020-08-07
+        String result = null;
+
+        String[] array = date.split("-");
+        result = Integer.parseInt(array[1]) + "月" + Integer.parseInt(array[2]) + "号";
+        return result; // 8月7号
+    }
+
+
     //获取当前完整的日期和时间
     public static String getNowDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -20,7 +20,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoodWeather">
-        <activity android:name=".ui.WorldCityWeatherActivity"></activity>
+        <activity android:name=".ui.MoreLifestyleActivity"></activity>
+        <activity android:name=".ui.MoreAirActivity" />
+        <activity android:name=".ui.MoreDailyActivity" />
+        <activity android:name=".ui.WorldCityWeatherActivity" />
         <activity android:name=".ui.WorldCityActivity" />
         <activity android:name=".ui.CommonlyUsedCityActivity" />
         <activity android:name=".ui.HotCityWeatherActivity" />

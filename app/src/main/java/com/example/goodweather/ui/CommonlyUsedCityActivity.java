@@ -1,4 +1,4 @@
-package com.example.goodweather.ui;
+ package com.example.goodweather.ui;
 
 import android.os.Bundle;
 import android.text.Editable;

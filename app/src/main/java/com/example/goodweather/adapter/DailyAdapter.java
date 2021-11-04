@@ -8,6 +8,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.goodweather.R;
 import com.example.goodweather.bean.DailyResponse;
+import com.example.goodweather.utils.DateUtils;
 import com.example.goodweather.utils.WeatherUtil;
 
 import java.util.List;
@@ -20,8 +21,9 @@ public class DailyAdapter extends BaseQuickAdapter<DailyResponse.DailyBean, Base
 
     @Override
     protected void convert(BaseViewHolder helper, DailyResponse.DailyBean item) {
-        helper.setText(R.id.tv_date, item.getFxDate())//日期
-                .setText(R.id.tv_low_and_height, item.getTempMin() + "/" + item.getTempMax() + "℃");//最低温和最高温
+        helper.setText(R.id.tv_date, DateUtils.dateSplitPlus(item.getFxDate()) + DateUtils.Week(item.getFxDate()))//日期
+                .setText(R.id.tv_temp_height,  item.getTempMax() + "℃")//最高温
+                .setText(R.id.tv_temp_low,"/" + item.getTempMin() + "℃" );//最低温
 
         //天气状态图片
         ImageView weatherStateIcon = helper.getView(R.id.iv_weather_state);

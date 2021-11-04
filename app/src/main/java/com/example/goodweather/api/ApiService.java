@@ -6,6 +6,7 @@ import com.example.goodweather.bean.DailyResponse;
 import com.example.goodweather.bean.HotCityBean;
 import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.LifestyleResponse;
+import com.example.goodweather.bean.MoreAirFiveResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.SearchCityBean;
@@ -45,7 +46,7 @@ public interface ApiService {
      * @param location
      * @return
      */
-    @GET("/s6/weather?key=756dc8a018744a75a6200810559528a9")
+    @GET("/s6/weather?key=46dc934400064646a60deb57ddb4fd4c")
     Call<WeatherBean> getWeatherData(@Query("location") String location);
 
     /**
@@ -59,7 +60,7 @@ public interface ApiService {
     /**
      * 海外热门城市
      */
-    @GET("/top?key=756dc8a018744a75a6200810559528a9&number=50&lang=zh")
+    @GET("/top?key=46dc934400064646a60deb57ddb4fd4c&number=50&lang=zh")
     Call<HotCityBean> hotCity(@Query("group") String group);
 
     /**
@@ -67,7 +68,7 @@ public interface ApiService {
      * @param location 城市名
      * @return 返回实况天气数据
      */
-    @GET("/v7/weather/now?key=756dc8a018744a75a6200810559528a9")
+    @GET("/v7/weather/now?key=46dc934400064646a60deb57ddb4fd4c")
     Call<NowResponse> nowWeather(@Query("location") String location);
 
     /**
@@ -77,7 +78,7 @@ public interface ApiService {
      * @param location 城市名
      * @return 返回天气预报数据
      */
-    @GET("/v7/weather/{type}?key=756dc8a018744a75a6200810559528a9")
+    @GET("/v7/weather/{type}?key=46dc934400064646a60deb57ddb4fd4c")
     Call<DailyResponse> dailyWeather(@Path("type") String type, @Query("location") String location);
 
 
@@ -86,7 +87,7 @@ public interface ApiService {
      * @param location  城市名
      * @return 返回逐小时数据
      */
-    @GET("/v7/weather/24h?key=756dc8a018744a75a6200810559528a9")
+    @GET("/v7/weather/24h?key=46dc934400064646a60deb57ddb4fd4c")
     Call<HourlyResponse> hourlyWeather(@Query("location") String location);
 
     /**
@@ -94,7 +95,7 @@ public interface ApiService {
      * @param location 城市名
      * @return 返回当天空气质量数据
      */
-    @GET("/v7/air/now?key=756dc8a018744a75a6200810559528a9")
+    @GET("/v7/air/now?key=46dc934400064646a60deb57ddb4fd4c")
     Call<AirNowResponse> airNowWeather(@Query("location") String location);
 
 
@@ -108,7 +109,7 @@ public interface ApiService {
      * @return 返回当前生活指数数据
      * @return
      */
-    @GET("/v7/indices/1d?key=756dc8a018744a75a6200810559528a9")
+    @GET("/v7/indices/1d?key=46dc934400064646a60deb57ddb4fd4c")
     Call<LifestyleResponse> lifestyle(@Query("type") String type,
                                       @Query("location") String location);
 
@@ -120,7 +121,7 @@ public interface ApiService {
      * @param mode     exact 精准搜索  fuzzy 模糊搜索
      * @return
      */
-    @GET("/v2/city/lookup?key=756dc8a018744a75a6200810559528a9&range=cn")
+    @GET("/v2/city/lookup?key=46dc934400064646a60deb57ddb4fd4c&range=cn")
     Call<NewSearchCityResponse> newSearchCity(@Query("location") String location,
                                               @Query("mode") String mode);
 
@@ -132,6 +133,14 @@ public interface ApiService {
      * @param range cn表示国内  world 表示全世界
      * @return WorldCityResponse 世界城市数据返回
      */
-    @GET("/v2/city/top?key=756dc8a018744a75a6200810559528a9&number=20")
+    @GET("/v2/city/top?key=46dc934400064646a60deb57ddb4fd4c&number=20")
     Call<WorldCityResponse> worldCity(@Query("range") String range);
+
+    /**
+     * 空气质量 5天预报
+     * @param location
+     * @return
+     */
+    @GET("/v7/air/5d?key=46dc934400064646a60deb57ddb4fd4c")
+    Call<MoreAirFiveResponse> airFiveWeather(@Query("location") String location);
 }

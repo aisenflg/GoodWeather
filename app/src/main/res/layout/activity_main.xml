@@ -33,6 +33,7 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
                 <TextView
+                    android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -44,8 +45,8 @@
                     android:id="@+id/iv_add"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:background="@drawable/selector_bg_img"
                     android:layout_gravity="right"
+                    android:background="@drawable/selector_bg_img"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:src="@mipmap/icon_add" />
@@ -66,23 +67,24 @@
                 当这个布局长度超出手机展示的部分就可以滚动，其中overScrollMode="never"
                 的意思是隐藏掉滚动条到顶部和底部时的水波纹-->
                 <androidx.core.widget.NestedScrollView
+                    android:id="@+id/scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:overScrollMode="never">
                     <!--天气和所在城市 -->
                     <LinearLayout
+                        android:id="@+id/lay_slide_area"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
                         <!--天气状况-->
                         <TextView
-                            android:id="@+id/tv_info"
+                            android:id="@+id/tv_week"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingLeft="16dp"
-                            android:paddingTop="12dp"
-                            android:textColor="#FFF"
+                            android:textColor="@color/white"
                             android:textSize="18sp" />
                         <!--温度-->
                         <RelativeLayout
@@ -110,18 +112,57 @@
                         </RelativeLayout>
 
                         <!--最高温和最低温-->
-                        <TextView
-                            android:id="@+id/tv_low_height"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:layout_marginTop="12dp">
+
+                            <TextView
+                                android:id="@+id/tv_temp_height"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:textColor="#FFF"
+                                android:textSize="@dimen/sp_14" />
+
+                            <TextView
+                                android:id="@+id/tv_temp_low"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:textColor="@color/temp_min_tx"
+                                android:textSize="@dimen/sp_14" />
+
+                        </LinearLayout>
+                        <!-- 天气情况和空气质量 -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:textColor="#FFF"
-                            android:textSize="@dimen/sp_14" />
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+                            <!-- 天气情况 -->
+                            <TextView
+                                android:id="@+id/tv_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                            <!-- 空气质量 -->
+                            <TextView
+                                android:id="@+id/tv_air_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="8dp"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="14dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
                             <!--城市-->
@@ -191,19 +232,47 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp" />
+                        <!-- 查看更多天气-->
+                        <TextView
+                            android:id="@+id/tv_more_daily"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableRight="@mipmap/icon_more_blue"
+                            android:gravity="center"
+                            android:padding="12dp"
+                            android:text="更多天气预报"
+                            android:textColor="@color/blue_more" />
                         <!--空气质量-->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="20dp">
-                            <!--标题-->
-                            <TextView
-                                android:layout_width="wrap_content"
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="空气质量"
-                                android:textColor="@color/white"
-                                android:textSize="18sp" />
+                                android:layout_gravity="center_vertical">
+                                <!--标题-->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="空气质量"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp" />
+                                <!-- 更多空气质量-->
+                                <TextView
+                                    android:id="@+id/tv_more_air"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:drawableRight="@mipmap/icon_more_blue"
+                                    android:padding="4dp"
+                                    android:text="更多"
+                                    android:textColor="@color/blue_more"
+                                    android:textSize="14sp" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -426,8 +495,8 @@
                                     </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
-                        </LinearLayout>
 
+                        </LinearLayout>
                         <!--风力展示-->
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -484,13 +553,30 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="20dp">
-                            <!--标题-->
-                            <TextView
-                                android:layout_width="wrap_content"
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="生活建议"
-                                android:textColor="#FFF"
-                                android:textSize="18sp" />
+                                android:layout_gravity="center_vertical">
+                                <!--标题-->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="生活建议"
+                                    android:textColor="#FFF"
+                                    android:textSize="18sp" />
+                                <!-- 更多生活建议-->
+                                <TextView
+                                    android:id="@+id/tv_more_lifestyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:drawableRight="@mipmap/icon_more_blue"
+                                    android:padding="4dp"
+                                    android:text="更多"
+                                    android:textColor="@color/blue_more"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
                             <!--紫外线-->
                             <TextView
                                 android:id="@+id/tv_uv"
