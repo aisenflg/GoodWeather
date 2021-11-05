@@ -10,6 +10,7 @@ import com.example.goodweather.bean.MoreAirFiveResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.SearchCityBean;
+import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.bean.WorldCityResponse;
 
@@ -143,4 +144,12 @@ public interface ApiService {
      */
     @GET("/v7/air/5d?key=46dc934400064646a60deb57ddb4fd4c")
     Call<MoreAirFiveResponse> airFiveWeather(@Query("location") String location);
+
+    /**
+     * 灾害预警
+     * @param location
+     * @return
+     */
+    @GET("/v7/warning/now?key=46dc934400064646a60deb57ddb4fd4c")
+    Call<WarningResponse> nowWarning(@Query("location") String location);
 }

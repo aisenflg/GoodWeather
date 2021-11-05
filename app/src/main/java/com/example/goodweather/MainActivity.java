@@ -46,6 +46,7 @@ import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.LifestyleResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
+import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
 import com.example.goodweather.ui.BackgroundManagerActivity;
@@ -54,6 +55,7 @@ import com.example.goodweather.ui.MoreAirActivity;
 import com.example.goodweather.ui.MoreDailyActivity;
 import com.example.goodweather.ui.MoreLifestyleActivity;
 import com.example.goodweather.ui.SearchCityActivity;
+import com.example.goodweather.ui.WarnActivity;
 import com.example.goodweather.ui.WorldCityActivity;
 import com.example.goodweather.utils.CodeToStringUtils;
 import com.example.goodweather.utils.Constant;
@@ -68,6 +70,7 @@ import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.SizeUtils;
 import com.example.mvplibrary.view.RoundProgressBar;
 import com.example.mvplibrary.view.WhiteWindmills;
+import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -97,9 +100,11 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
         implements WeatherContract.IWeatherView, View.OnClickListener, View.OnScrollChangeListener {
 
     @BindView(R.id.bg)
-    LinearLayout bg;//背景图
+    ImageView bg;//背景图
     @BindView(R.id.tv_week)
     TextView tvWeek;//星期
+    @BindView(R.id.tv_warn)
+    TextView tvWarn;//星期
     @BindView(R.id.tv_air_info)
     TextView tvAirInfo;//空气质量
     @BindView(R.id.tv_info)
@@ -179,6 +184,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
 
 
     private boolean flag = true;//定位图标显示,只有定位的时候显示为true,切换城市和常用城市不显示
+    private String warnBodyString = null;//灾害预警数据字符串
 
 
     //定位器
@@ -694,7 +700,12 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
             case R.id.tv_more_lifestyle:
                 goToMore(MoreLifestyleActivity.class);
                 break;
-
+            //灾害预警
+            case R.id.tv_warn:
+                Intent intent = new Intent(context,WarnActivity.class);
+                intent.putExtra("warnBodyString",warnBodyString);
+                startActivity(intent);
+                break;
 
         }
     }
@@ -828,21 +839,22 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
                 }
             } else if (isCustomImg != false) {
                 String imgPath = SPUtils.getString(Constant.CUSTOM_IMG_PATH, "", context);
-                Glide.with(context)
-                        .asBitmap()
-                        .load(imgPath)
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
-                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                                bg.setBackground(drawable);
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
-                                ToastUtils.showShortToast(context, "数据为空");
-                            }
-                        });
+//                Glide.with(context)
+//                        .asBitmap()
+//                        .load(imgPath)
+//                        .into(new CustomTarget<Bitmap>() {
+//                            @Override
+//                            public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+//                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+//                                bg.setBackground(drawable);
+//                            }
+//
+//                            @Override
+//                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+//                                ToastUtils.showShortToast(context, "数据为空");
+//                            }
+//                        });
+                Glide.with(context).load(imgPath).into(bg);
             }
         }
     }
@@ -897,6 +909,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
                 mPresent.hourlyWeather(locationId);//查询逐小时天气预报
                 mPresent.airNowWeather(locationId);//空气质量
                 mPresent.lifestyle(locationId);//生活指数
+                mPresent.nowWeather(locationId);
             } else {
                 ToastUtils.showShortToast(context, "数据为空");
             }
@@ -1072,6 +1085,27 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
             }
         } else {
             ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+        }
+    }
+
+    /**
+     * 灾害预警返回
+     * @param response
+     */
+    @Override
+    public void getWarningResult(Response<WarningResponse> response) {
+        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
+            List<WarningResponse.WarningBean> data = response.body().getWarning();
+            if (data != null && data.size() >0) {
+                tvWarn.setText(data.get(0).getTitle()+ "   " + data.get(0).getText());
+                tvWarn.setVisibility(View.VISIBLE);
+                warnBodyString = new Gson().toJson(response.body());
+            }else {
+                //没有数据则隐藏跑马灯
+                tvWarn.setVisibility(View.GONE);
+            }
+        }else {
+            ToastUtils.showShortToast(context,CodeToStringUtils.WeatherCode(response.body().getCode()));
         }
     }
 

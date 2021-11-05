@@ -10,6 +10,7 @@ import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.LifestyleResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
+import com.example.goodweather.bean.WarningResponse;
 import com.example.mvplibrary.base.BasePresenter;
 import com.example.mvplibrary.base.BaseView;
 import com.example.mvplibrary.net.NetCallBack;
@@ -24,17 +25,16 @@ import retrofit2.Response;
 public class WeatherContract {
 
     public static class WeatherPresenter extends BasePresenter<IWeatherView> {
-        //和风天气地址
-        private ApiService mService = ServiceGenerator.createService(ApiService.class,0);
-        //必应地址
-        private ApiService mService1 = ServiceGenerator.createService(ApiService.class,1);
-
+        //V7 版本天气查询
+        private ApiService mService = ServiceGenerator.createService(ApiService.class,3);
 
         /**
          * 必应每日一图
          */
         public void biying(Context context){
-            mService1.biying().enqueue(new NetCallBack<BiYingImgBean>() {
+            //必应地址
+            ApiService service = ServiceGenerator.createService(ApiService.class,1);
+            service.biying().enqueue(new NetCallBack<BiYingImgBean>() {
                 @Override
                 public void onSuccess(Call<BiYingImgBean> call, Response<BiYingImgBean> response) {
                     if (getView() != null) {
@@ -82,8 +82,7 @@ public class WeatherContract {
          * @param location  城市名
          */
         public void nowWeather(String location){//这个3 表示使用新的V7API访问地址
-            ApiService service = ServiceGenerator.createService(ApiService.class,3);
-            service.nowWeather(location).enqueue(new NetCallBack<NowResponse>() {
+            mService.nowWeather(location).enqueue(new NetCallBack<NowResponse>() {
                 @Override
                 public void onSuccess(Call<NowResponse> call, Response<NowResponse> response) {
                     if(getView() != null){
@@ -105,8 +104,7 @@ public class WeatherContract {
          * @param location   城市名
          */
         public void dailyWeather(String location){//这个3 表示使用新的V7API访问地址
-            ApiService service = ServiceGenerator.createService(ApiService.class,3);
-            service.dailyWeather("7d",location).enqueue(new NetCallBack<DailyResponse>() {
+            mService.dailyWeather("7d",location).enqueue(new NetCallBack<DailyResponse>() {
                 @Override
                 public void onSuccess(Call<DailyResponse> call, Response<DailyResponse> response) {
                     if(getView() != null){
@@ -128,8 +126,7 @@ public class WeatherContract {
          * @param location   城市名
          */
         public void hourlyWeather(String location){
-            ApiService service = ServiceGenerator.createService(ApiService.class,3);
-            service.hourlyWeather(location).enqueue(new NetCallBack<HourlyResponse>() {
+            mService.hourlyWeather(location).enqueue(new NetCallBack<HourlyResponse>() {
                 @Override
                 public void onSuccess(Call<HourlyResponse> call, Response<HourlyResponse> response) {
                     if(getView() != null){
@@ -151,8 +148,8 @@ public class WeatherContract {
          * @param location   城市名
          */
         public void airNowWeather(String location){
-            ApiService service = ServiceGenerator.createService(ApiService.class,3);
-            service.airNowWeather(location).enqueue(new NetCallBack<AirNowResponse>() {
+
+            mService.airNowWeather(location).enqueue(new NetCallBack<AirNowResponse>() {
                 @Override
                 public void onSuccess(Call<AirNowResponse> call, Response<AirNowResponse> response) {
                     if(getView() != null){
@@ -174,12 +171,29 @@ public class WeatherContract {
          * @param location   城市名  type中的"1,2,3,5,6,8,9,10"，表示只获取这8种类型的指数信息，同样是为了对应之前的界面UI
          */
         public void lifestyle(String location){
-            ApiService service = ServiceGenerator.createService(ApiService.class,3);
-            service.lifestyle("1,2,3,5,6,8,9,10",location).enqueue(new NetCallBack<LifestyleResponse>() {
+            mService.lifestyle("1,2,3,5,6,8,9,10",location).enqueue(new NetCallBack<LifestyleResponse>() {
                 @Override
                 public void onSuccess(Call<LifestyleResponse> call, Response<LifestyleResponse> response) {
                     if(getView() != null){
                         getView().getLifestyleResult(response);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    if(getView() != null){
+                        getView().getWeatherDataFailed();
+                    }
+                }
+            });
+        }
+
+        public void warning(String location){
+            mService.nowWarning(location).enqueue(new NetCallBack<WarningResponse>() {
+                @Override
+                public void onSuccess(Call<WarningResponse> call, Response<WarningResponse> response) {
+                    if (getView() != null) {
+                        getView().getWarningResult(response);
                     }
                 }
 
@@ -216,7 +230,8 @@ public class WeatherContract {
         void getAirNowResult(Response<AirNowResponse> response);
         //生活指数
         void getLifestyleResult(Response<LifestyleResponse> response);
-
+        //灾害预警
+        void getWarningResult(Response<WarningResponse> response);
 
         //天气数据错误返回
         void getWeatherDataFailed();

@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/pic_bg"
-    android:fitsSystemWindows="true"
     android:gravity="center"
     tools:context=".MainActivity">
-    <!--相对布局-->
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!--透明度为0.3的黑色背景-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.3"
-            android:background="#000" />
+        android:layout_height="match_parent"
+        android:background="@drawable/img_5"
+        android:scaleType="centerCrop" />
+
+
         <!--主要的布局文件-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/transparent_bg_2"
+            android:fitsSystemWindows="true"
             android:orientation="vertical">
             <!--标题 沉浸式-->
             <androidx.appcompat.widget.Toolbar
@@ -78,7 +75,22 @@
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
-                        <!--天气状况-->
+                        <!--灾害预警-->
+                        <com.example.mvplibrary.view.MarqueeTextView
+                            android:id="@+id/tv_warn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginEnd="@dimen/dp_16"
+                            android:ellipsize="marquee"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:paddingTop="@dimen/dp_4"
+                            android:paddingBottom="@dimen/dp_4"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/sp_12" />
+
+                        <!--星期-->
                         <TextView
                             android:id="@+id/tv_week"
                             android:layout_width="match_parent"
@@ -654,6 +666,6 @@
                 </androidx.core.widget.NestedScrollView>
             </com.scwang.smartrefresh.layout.SmartRefreshLayout>
         </LinearLayout>
-    </RelativeLayout>
 
-</LinearLayout>
+
+</FrameLayout>
