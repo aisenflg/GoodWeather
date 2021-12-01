@@ -19,7 +19,6 @@ public class HotCityContract {
 
     public static class HotCityPresenter extends BasePresenter<IHotCityView>{
 
-
         public void hotCity(Context context,String group){
             ApiService mService = ServiceGenerator.createService(ApiService.class,2);
             mService.hotCity(group).enqueue(new Callback<HotCityBean>() {

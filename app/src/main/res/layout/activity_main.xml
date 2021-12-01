@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
     <ImageView
         android:id="@+id/bg"
         android:layout_width="match_parent"
@@ -26,8 +26,17 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:contentInsetLeft="16dp"
+                app:contentInsetLeft="0dp"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
+
+                <ImageView
+                    android:id="@+id/iv_map"
+                    android:layout_width="@dimen/dp_50"
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_marginLeft="@dimen/dp_4"
+                    android:background="@drawable/selector_bg_img"
+                    android:padding="@dimen/dp_12"
+                    android:src="@mipmap/icon_map" />
 
                 <TextView
                     android:id="@+id/tv_title"

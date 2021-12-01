@@ -21,6 +21,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('GoodWeather.jks')
+            storePassword '123456'
+            keyAlias 'GoodWeather'
+            keyPassword '123456'
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -48,6 +58,8 @@ dependencies {
     //butterknife  绑定视图依赖BindView，告别findById，不过你还得安装一个butterknife插件才行
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
     implementation project(':mvplibrary')//引入模块  然后将项目里的依赖移动到模块的build.gradle里
 
 }

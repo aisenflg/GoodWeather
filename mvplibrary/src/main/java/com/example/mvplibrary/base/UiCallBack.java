@@ -7,7 +7,6 @@ import android.os.Bundle;
  */
 public interface UiCallBack {
 
-
     //初始化savedInstanceState
     void initBeforeView(Bundle savedInstanceState);
 

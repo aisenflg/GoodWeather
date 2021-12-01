@@ -28,6 +28,8 @@ public class WeatherContract {
         //V7 版本天气查询
         private ApiService mService = ServiceGenerator.createService(ApiService.class,3);
 
+
+
         /**
          * 必应每日一图
          */

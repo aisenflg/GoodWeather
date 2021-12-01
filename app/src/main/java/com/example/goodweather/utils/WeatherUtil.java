@@ -1,5 +1,6 @@
 package com.example.goodweather.utils;
 
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.goodweather.R;
@@ -185,6 +186,31 @@ public class WeatherUtil {
     }
 
     /**
+     * 紫外线等级描述
+     *
+     * @param uvIndex
+     * @return
+     */
+    public static String uvIndexInfo(String uvIndex) {
+        String result = null;
+        Log.d("uvIndex-->", uvIndex);
+        int level = Integer.parseInt(uvIndex);
+        if (level <= 2) {
+            result = "较弱";
+        } else if (level <= 5) {
+            result = "弱";
+        } else if (level <= 7) {
+            result = "中等";
+        } else if (level <= 10) {
+            result = "强";
+        } else if (level <= 15) {
+            result = "很强";
+        }
+        return result;
+    }
+
+
+    /**
      * 根据传入的时间显示时间段描述信息
      * @param timeData
      * @return
@@ -208,5 +234,42 @@ public class WeatherUtil {
         }
         return timeInfo;
     }
+
+    /**
+     * 根据api的提示转为更为人性化的提醒
+     * @param apiInfo
+     * @return
+     */
+    public static String apiToTip(String apiInfo){
+        String result = null;
+        String str = null;
+        if(apiInfo.contains("AQI ")){
+            str = apiInfo.replace("AQI ", " ");
+        }else {
+            str = apiInfo;
+        }
+        switch (str){//优，良，轻度污染，中度污染，重度污染，严重污染
+            case "优":
+                result = "♪(^∇^*) 空气很好。";
+                break;
+            case "良":
+                result = "ヽ(✿ﾟ▽ﾟ)ノ 空气不错。";
+                break;
+            case "轻度污染":
+                result = "(⊙﹏⊙) 空气有些糟糕。";
+                break;
+            case "中度污染":
+                result = " ε=(´ο｀*)))唉 空气污染较为严重，注意防护。";
+                break;
+            case "重度污染":
+                result = "o(≧口≦)o 空气污染很严重，记得戴口罩哦！";
+                break;
+            case "严重污染":
+                result = "ヽ(*。>Д<)o゜ 完犊子了!空气污染非常严重，要减少出门，定期检查身体，能搬家就搬家吧！";
+                break;
+        }
+        return result;
+    }
+
 
 }

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
 import com.example.goodweather.utils.ToastUtils;
 import com.example.mvplibrary.base.BaseActivity;
