@@ -1,18 +1,22 @@
 package com.example.goodweather.ui;
 
 import android.animation.Animator;
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -50,6 +54,8 @@ import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.contract.WeatherContract;
 import com.example.goodweather.eventbus.SearchCityEvent;
+import com.example.goodweather.utils.APKVersionInfoUtils;
+import com.example.goodweather.utils.AppStartUpUtils;
 import com.example.goodweather.utils.CodeToStringUtils;
 import com.example.goodweather.utils.Constant;
 import com.example.goodweather.utils.DateUtils;
@@ -57,12 +63,14 @@ import com.example.goodweather.utils.SPUtils;
 import com.example.goodweather.utils.StatusBarUtil;
 import com.example.goodweather.utils.ToastUtils;
 import com.example.goodweather.utils.WeatherUtil;
+import com.example.mvplibrary.bean.AppVersion;
 import com.example.mvplibrary.mvp.MvpActivity;
 import com.example.mvplibrary.utils.AnimationUtil;
 import com.example.mvplibrary.utils.LiWindow;
 import com.example.mvplibrary.utils.SizeUtils;
 import com.example.mvplibrary.view.RoundProgressBar;
 import com.example.mvplibrary.view.WhiteWindmills;
+import com.example.mvplibrary.view.dialog.AlertDialog;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
@@ -75,6 +83,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -97,7 +106,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
     @BindView(R.id.tv_week)
     TextView tvWeek;//星期
     @BindView(R.id.tv_warn)
-    TextView tvWarn;//星期
+    TextView tvWarn;//灾害预警
     @BindView(R.id.tv_air_info)
     TextView tvAirInfo;//空气质量
     @BindView(R.id.tv_info)
@@ -213,6 +222,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
     private static final float START_ALPHA = 0.7f;//开始透明读
     private static final float END_ALPHA = 1f;//结束透明度
     private boolean flagOther = false;//跳转其他页面时才为true
+    private AlertDialog updateAppDialog = null;//应用更新提示弹窗
 
     private String locationId = null;//城市id，用于查询城市数据  V7版本 中 才有
 
@@ -785,6 +795,72 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
         }
     }
 
+
+    /**
+     * 应用更新提示弹窗
+     * @param downloadUrl 下载地址
+     * @param updateLog  更新日志
+     */
+    private void showUpdateAppDialog(String downloadUrl,String updateLog) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .addDefaultAnimation()//默认弹窗动画
+                .setCancelable(true)
+                .setText(R.id.tv_update_info,updateLog)
+                .setContentView(R.layout.dialog_update_app_tip)//载入布局文件
+                .setWidthAndHeight(SizeUtils.dp2px(context, 270), ViewGroup.LayoutParams.WRAP_CONTENT)//设置弹窗宽高
+                .setOnClickListener(R.id.tv_cancel, v -> {//取消
+                    updateAppDialog.dismiss();
+                }).setOnClickListener(R.id.tv_fast_update, v -> {//立即更新
+                    //开始下载
+                    downloadApk(downloadUrl);
+                    updateAppDialog.dismiss();
+                });
+        updateAppDialog = builder.create();
+        updateAppDialog.show();
+    }
+
+    /**
+     * 清除APK
+     * @param apkName
+     * @return
+     */
+    public static File clearApk(String apkName) {
+        File apkFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), apkName);
+        if (apkFile.exists()) {
+            apkFile.delete();
+        }
+        return apkFile;
+    }
+
+    /**
+     * 下载APK
+     * @param downloadUrl
+     */
+    private void downloadApk(String downloadUrl) {
+        clearApk("GoodWeather.apk");
+        //下载管理器 获取系统下载服务
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
+        //设置运行使用的网络类型，移动网络或者Wifi都可以
+        request.setAllowedNetworkTypes(request.NETWORK_MOBILE | request.NETWORK_WIFI);
+        //设置是否允许漫游
+        request.setAllowedOverRoaming(true);
+        //设置文件类型
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        String mimeString = mimeTypeMap.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(downloadUrl));
+        request.setMimeType(mimeString);
+        //设置下载时或者下载完成时，通知栏是否显示
+        request.setNotificationVisibility(request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setTitle("下载新版本");
+        request.setVisibleInDownloadsUi(true);//下载UI
+        //sdcard目录下的download文件夹
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "GoodWeather.apk");
+        //将下载请求放入队列
+        downloadManager.enqueue(request);
+    }
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -894,7 +970,7 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
                 mPresent.hourlyWeather(locationId);//查询逐小时天气预报
                 mPresent.airNowWeather(locationId);//空气质量
                 mPresent.lifestyle(locationId);//生活指数
-                mPresent.nowWeather(locationId);
+                mPresent.getWarning(locationId);//灾害预警
             } else {
                 ToastUtils.showShortToast(context, "数据为空");
             }
@@ -1079,6 +1155,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
      */
     @Override
     public void getWarningResult(Response<WarningResponse> response) {
+        dismissLoadingDialog();//关闭弹窗
+        mPresent.getAppVersion(Constant.APIKEY, Constant.APPKEY);//检查更新
         if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
             List<WarningResponse.WarningBean> data = response.body().getWarning();
             if (data != null && data.size() >0) {
@@ -1091,6 +1169,18 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
             }
         }else {
             ToastUtils.showShortToast(context,CodeToStringUtils.WeatherCode(response.body().getCode()));
+        }
+    }
+
+    @Override
+    public void getAppVersionResult(Response<AppVersion> response) {
+        if (response.body().getData() != null) {
+            if(!response.body().getData().getBuildVersion().equals(APKVersionInfoUtils.getVerName(context))){//提示更新
+                if(AppStartUpUtils.isTodayFirstStartApp(context)){//今天第一次打开APP
+                    //更新提示弹窗
+                    showUpdateAppDialog(response.body().getData().getDownloadURL(),response.body().getData().getBuildUpdateDescription());
+                }
+            }
         }
     }
 

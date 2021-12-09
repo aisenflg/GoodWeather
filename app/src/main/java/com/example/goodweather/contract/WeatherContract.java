@@ -13,6 +13,7 @@ import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.WarningResponse;
 import com.example.mvplibrary.base.BasePresenter;
 import com.example.mvplibrary.base.BaseView;
+import com.example.mvplibrary.bean.AppVersion;
 import com.example.mvplibrary.net.NetCallBack;
 import com.example.mvplibrary.net.ServiceGenerator;
 
@@ -190,7 +191,7 @@ public class WeatherContract {
             });
         }
 
-        public void warning(String location){
+        public void getWarning(String location){
             mService.nowWarning(location).enqueue(new NetCallBack<WarningResponse>() {
                 @Override
                 public void onSuccess(Call<WarningResponse> call, Response<WarningResponse> response) {
@@ -207,6 +208,26 @@ public class WeatherContract {
                 }
             });
         }
+
+        public void getAppVersion(String apiKye, String appKey){
+            ApiService service = ServiceGenerator.createService(ApiService.class,5);
+            service.getAppVersion(apiKye, appKey).enqueue(new NetCallBack<AppVersion>() {
+                @Override
+                public void onSuccess(Call<AppVersion> call, Response<AppVersion> response) {
+                    if (getView() != null) {
+                        getView().getAppVersionResult(response);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    if (getView() != null) {
+                        getView().getDataFailed();
+                    }
+                }
+            });
+        }
+
 
 
     }
@@ -234,9 +255,13 @@ public class WeatherContract {
         void getLifestyleResult(Response<LifestyleResponse> response);
         //灾害预警
         void getWarningResult(Response<WarningResponse> response);
+        //版本更新相关信息
+        void getAppVersionResult(Response<AppVersion> response);
 
         //天气数据错误返回
         void getWeatherDataFailed();
+
+
 
     }
 

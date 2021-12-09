@@ -13,9 +13,13 @@ import com.example.goodweather.bean.SearchCityBean;
 import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.bean.WorldCityResponse;
+import com.example.mvplibrary.bean.AppVersion;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -152,4 +156,8 @@ public interface ApiService {
      */
     @GET("/v7/warning/now?key=46dc934400064646a60deb57ddb4fd4c")
     Call<WarningResponse> nowWarning(@Query("location") String location);
+
+    @FormUrlEncoded
+    @POST("/apiv2/app/check")
+    Call<AppVersion> getAppVersion(@Field("_api_key") String apiKey,@Field("appKey") String appKey);
 }
