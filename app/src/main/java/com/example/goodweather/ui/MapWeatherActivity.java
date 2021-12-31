@@ -2,6 +2,7 @@ package com.example.goodweather.ui;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,8 +42,10 @@ import com.example.goodweather.adapter.SevenDailyAdapter;
 import com.example.goodweather.adapter.TodayDetailAdapter;
 import com.example.goodweather.bean.AirNowResponse;
 import com.example.goodweather.bean.DailyResponse;
+import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
+import com.example.goodweather.bean.SunMoonResponse;
 import com.example.goodweather.bean.TodayDetailBean;
 import com.example.goodweather.contract.MapWeatherContract;
 import com.example.goodweather.utils.CodeToStringUtils;
@@ -50,6 +54,9 @@ import com.example.goodweather.utils.DateUtils;
 import com.example.goodweather.utils.StatusBarUtil;
 import com.example.goodweather.utils.ToastUtils;
 import com.example.goodweather.utils.WeatherUtil;
+import com.example.goodweather.view.horizonview.HourlyForecastView;
+import com.example.goodweather.view.horizonview.IndexHorizontalScrollView;
+import com.example.goodweather.view.skyview.SunView;
 import com.example.mvplibrary.mvp.MvpActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -61,6 +68,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import retrofit2.Response;
+
+import static com.example.goodweather.utils.DateUtils.getCurrentTime;
+import static com.example.goodweather.utils.DateUtils.getNowDateNoLimiter;
 
 public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeatherPresenter> implements MapWeatherContract.IMapWeatherView, View.OnClickListener {
 
@@ -96,6 +106,24 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
     RelativeLayout bottomSheetRay;//底部拖动布局
     @BindView(R.id.btn_auto_location)
     FloatingActionButton btnAutoLocation;//重新定位按钮
+
+    @BindView(R.id.tv_line_max_tmp)
+    TextView tvLineMaxTmp;//今日最高温
+    @BindView(R.id.tv_line_min_tmp)
+    TextView tvLineMinTmp;//今日最低温
+    @BindView(R.id.hourly)
+    HourlyForecastView hourly;//和风自定义逐小时天气渲染控件
+    @BindView(R.id.hsv)
+    IndexHorizontalScrollView hsv;//和风自定义滚动条
+
+    @BindView(R.id.sun_view)
+    SunView sunView;//太阳
+    @BindView(R.id.moon_view)
+    SunView moonView;//月亮
+    @BindView(R.id.tv_moon_state)
+    TextView tvMoonState;//月亮状态
+
+
 
 
     private String locationId;//城市id
@@ -193,6 +221,7 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
         option.setCoorType("bd09ll");//设置坐标类型  可以设置BD09LL和GCJ02两种坐标
         option.setScanSpan(0);//设置扫描间隔，单位是毫秒，0  则表示只定位一次，设置毫秒不能低于1000，也就是1秒
 
+
         mLocationClient.setLocOption(option);//传入定位设置
         mLocationClient.start();//开始定位
 
@@ -220,6 +249,7 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRay);
         /*bottomSheet 的 状态改变 根据不同的状态 做不同的事情*/
         //setBottomSheetCallback 已经过时了 现在使用addBottomSheetCallback
+
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull @NotNull View bottomSheet, int newState) {
@@ -245,6 +275,8 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
                 /*slideOffset bottomSheet 的 移动距离*/
             }
         });
+
+
 
 
     }
@@ -333,7 +365,10 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
                 locationId = response.body().getLocation().get(0).getId();//城市Id
                 showLoadingDialog();
                 mPresent.nowWeather(locationId);//查询实况天气
+                mPresent.airNowWeather(locationId);//空气质量
+//                mPresent.weatherHourly(locationId);//24小时天气预报
                 mPresent.dailyWeather(locationId);//查询天气预报
+                mPresent.getSunMoon(locationId,getNowDateNoLimiter());//查询太阳和月亮
             } else {
                 ToastUtils.showShortToast(context, "数据为空");
             }
@@ -440,6 +475,94 @@ public class MapWeatherActivity extends MvpActivity<MapWeatherContract.MapWeathe
             }
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void getSunMoonResult(Response<SunMoonResponse> response) {
+        dismissLoadingDialog();
+        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
+
+            SunMoonResponse data = response.body();
+            if (data != null) {
+                String sunRise = getCurrentTime(data.getSunrise());
+                String moonRise = getCurrentTime(data.getMoonrise());
+                String sunSet = getCurrentTime(data.getSunset());
+                String moonSet = getCurrentTime(data.getMoonset());
+                String currentTime = getCurrentTime(null);
+
+                sunView.setTimes(sunRise, sunSet, currentTime);
+                moonView.setTimes(moonRise, moonSet, currentTime);
+                if(data.getMoonPhase() != null && data.getMoonPhase().size()>0){
+                    tvMoonState.setText(data.getMoonPhase().get(0).getName());
+                }
+
+            } else {
+                ToastUtils.showShortToast(context, "日出日落数据为空");
+            }
+        } else {
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+        }
+
+    }
+
+    /**
+     * 24小时天气预报数据返回
+     * @param response
+     */
+    @Override
+    public void getWeatherHourlyResult(Response<HourlyResponse> response) {
+        if(response.body().getCode().equals(Constant.SUCCESS_CODE)){
+            List<HourlyResponse.HourlyBean> hourlyWeatherList = response.body().getHourly();
+            List<HourlyResponse.HourlyBean> data = new ArrayList<>();
+            if (hourlyWeatherList.size() > 23) {
+                for (int i = 0; i < 24; i++) {
+                    data.add(hourlyWeatherList.get(i));
+                    String condCode = data.get(i).getIcon();
+                    String time = data.get(i).getFxTime();
+                    time = time.substring(time.length() - 11, time.length() - 9);
+                    int hourNow = Integer.parseInt(time);
+                    if (hourNow >= 6 && hourNow <= 19) {
+                        data.get(i).setIcon(condCode + "d");
+                    } else {
+                        data.get(i).setIcon(condCode + "n");
+                    }
+                }
+            } else {
+                for (int i = 0; i < hourlyWeatherList.size(); i++) {
+                    data.add(hourlyWeatherList.get(i));
+                    String condCode = data.get(i).getIcon();
+                    String time = data.get(i).getFxTime();
+                    time = time.substring(time.length() - 11, time.length() - 9);
+                    int hourNow = Integer.parseInt(time);
+                    if (hourNow >= 6 && hourNow <= 19) {
+                        data.get(i).setIcon(condCode + "d");
+                    } else {
+                        data.get(i).setIcon(condCode + "n");
+                    }
+                }
+            }
+
+            int minTmp = Integer.parseInt(data.get(0).getTemp());
+            int maxTmp = minTmp;
+            for (int i = 0; i < data.size(); i++) {
+                int tmp = Integer.parseInt(data.get(i).getTemp());
+                minTmp = Math.min(tmp, minTmp);
+                maxTmp = Math.max(tmp, maxTmp);
+            }
+            //设置当天的最高最低温度
+            hourly.setHighestTemp(maxTmp);
+            hourly.setLowestTemp(minTmp);
+            if (maxTmp == minTmp) {
+                hourly.setLowestTemp(minTmp - 1);
+            }
+            hourly.initData(data);
+            tvLineMaxTmp.setText(maxTmp + "°");
+            tvLineMinTmp.setText(minTmp + "°");
+        }else {
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+        }
+    }
+
 
 
     /**

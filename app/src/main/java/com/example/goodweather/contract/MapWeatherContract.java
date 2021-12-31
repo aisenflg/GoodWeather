@@ -3,8 +3,10 @@ package com.example.goodweather.contract;
 import com.example.goodweather.api.ApiService;
 import com.example.goodweather.bean.AirNowResponse;
 import com.example.goodweather.bean.DailyResponse;
+import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
+import com.example.goodweather.bean.SunMoonResponse;
 import com.example.mvplibrary.base.BasePresenter;
 import com.example.mvplibrary.base.BaseView;
 import com.example.mvplibrary.net.NetCallBack;
@@ -105,6 +107,55 @@ public class MapWeatherContract {
                 }
             });
         }
+
+        /**
+         * 24小时天气预报
+         * @param location   城市名
+         */
+        public void weatherHourly(String location){//这个3 表示使用新的V7API访问地址
+            ApiService service = ServiceGenerator.createService(ApiService.class,3);
+            service.hourlyWeather(location).enqueue(new NetCallBack<HourlyResponse>() {
+                @Override
+                public void onSuccess(Call<HourlyResponse> call, Response<HourlyResponse> response) {
+                    if(getView() != null){
+                        getView().getWeatherHourlyResult(response);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    if(getView() != null){
+                        getView().getDataFailed();
+                    }
+                }
+            });
+        }
+
+        /**
+         * 日出日落、月升月落
+         * @param location   城市名
+         */
+        public void getSunMoon(String location,String date){
+            ApiService service = ServiceGenerator.createService(ApiService.class,3);
+            service.getSunMoon(location,date).enqueue(new NetCallBack<SunMoonResponse>() {
+                @Override
+                public void onSuccess(Call<SunMoonResponse> call, Response<SunMoonResponse> response) {
+                    if(getView() != null){
+                        getView().getSunMoonResult(response);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    if(getView() != null){
+                        getView().getDataFailed();
+                    }
+                }
+            });
+        }
+
+
+
     }
 
 
@@ -120,6 +171,11 @@ public class MapWeatherContract {
 
         //空气质量
         void getAirNowResult(Response<AirNowResponse> response);
+
+        //太阳和月亮
+        void getSunMoonResult(Response<SunMoonResponse> response);
+        //24小时天气预报
+        void getWeatherHourlyResult(Response<HourlyResponse> response);
 
     }
 }

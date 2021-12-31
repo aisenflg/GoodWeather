@@ -201,4 +201,31 @@ public class DateUtils {
         return timestamp;
     }
 
+
+
+    //获取当前日期  没有分隔符
+    public static String getNowDateNoLimiter() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        return sdf.format(new Date());
+    }
+
+    /**
+     * 获取当前时间转换成时和分
+     * @param data
+     * @return
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String getCurrentTime(String data) {
+        String result = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        if (data == null) {//获取当前时间的时和分
+            result = sdf.format(new Date());
+        } else {
+            LocalDateTime date = LocalDateTime.parse(data, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            result = date.format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+        return result;
+    }
+
+
 }

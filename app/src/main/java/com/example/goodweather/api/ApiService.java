@@ -10,6 +10,7 @@ import com.example.goodweather.bean.MoreAirFiveResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.SearchCityBean;
+import com.example.goodweather.bean.SunMoonResponse;
 import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.bean.WorldCityResponse;
@@ -157,6 +158,19 @@ public interface ApiService {
     @GET("/v7/warning/now?key=46dc934400064646a60deb57ddb4fd4c")
     Call<WarningResponse> nowWarning(@Query("location") String location);
 
+    /**
+     * 太阳和月亮  日出日落、月升月落
+     */
+    @GET("/v7/astronomy/sunmoon?key=46dc934400064646a60deb57ddb4fd4c")
+    Call<SunMoonResponse> getSunMoon(@Query("location") String location, @Query("date") String date);
+
+
+    /**
+     * 检查更新
+     * @param apiKey
+     * @param appKey
+     * @return
+     */
     @FormUrlEncoded
     @POST("/apiv2/app/check")
     Call<AppVersion> getAppVersion(@Field("_api_key") String apiKey,@Field("appKey") String appKey);
