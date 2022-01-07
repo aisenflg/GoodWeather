@@ -1,6 +1,5 @@
 package com.example.goodweather.ui;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +36,8 @@ import com.example.mvplibrary.flowlayout.RecordsDao;
 import com.example.mvplibrary.flowlayout.TagAdapter;
 import com.example.mvplibrary.flowlayout.TagFlowLayout;
 import com.example.mvplibrary.mvp.MvpActivity;
+import com.example.mvplibrary.utils.SizeUtils;
+import com.example.mvplibrary.view.dialog.AlertDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -82,6 +81,45 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
     private List<String> recordList = new ArrayList<>();
     private TagAdapter mRecordsAdapter;
     private LinearLayout mHistoryContent;
+    /**
+     * 提示弹窗
+     */
+    private AlertDialog tipDialog = null;
+
+    /**
+     * 显示提示弹窗
+     * @param data 数据
+     * @param content 内容
+     */
+    private void showTipDialog(Object data, String content) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .addDefaultAnimation()
+                .setCancelable(true)
+                .setContentView(R.layout.dialog_tip)
+                .setWidthAndHeight(SizeUtils.dp2px(context, 270), LinearLayout.LayoutParams.WRAP_CONTENT)
+                .setText(R.id.tv_content, content)
+                .setOnClickListener(R.id.tv_cancel, v -> {
+                    tipDialog.dismiss();
+                }).setOnClickListener(R.id.tv_sure, v -> {
+                    //传入all则删除所有
+                    if (Constant.ALL_RECORD.equals(data)) {
+                        flSearchRecords.setLimit(true);
+                        //清除所有数据
+                        mRecordsDao.deleteUsernameAllRecords();
+                        llHistoryContent.setVisibility(View.GONE);
+                    } else {
+                        //删除某一条记录  传入单个的position
+                        mRecordsDao.deleteRecord(recordList.get((Integer) data));
+                        initTagFlowLayout();
+                    }
+
+                    tipDialog.dismiss();
+                });
+        tipDialog = builder.create();
+        tipDialog.show();
+    }
+
+
 
     //点击事件
     @OnClick({R.id.iv_clear_search,R.id.clear_all_records, R.id.iv_arrow})
@@ -92,15 +130,7 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
                 editQuery.setText("");
                 break;
             case R.id.clear_all_records://清除所有记录
-                showDialog("确定要删除全部历史记录？", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        flSearchRecords.setLimit(true);
-                        //清除所有数据
-                        mRecordsDao.deleteUsernameAllRecords();
-                        llHistoryContent.setVisibility(View.GONE);
-                    }
-                });
+                showTipDialog("all","确定要删除全部历史记录?");
                 break;
             case R.id.iv_arrow://向下展开
                 flSearchRecords.setLimit(false);
@@ -181,15 +211,7 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
         flSearchRecords.setOnLongClickListener(new TagFlowLayout.OnLongClickListener() {
             @Override
             public void onLongClick(View view, final int position) {
-                showDialog("确定要删除该条历史记录？", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //删除某一条记录
-                        mRecordsDao.deleteRecord(recordList.get(position));
-
-                        initTagFlowLayout();
-                    }
-                });
+                showTipDialog(position,"确定要删除该条历史记录?");
             }
         });
 
@@ -374,13 +396,6 @@ public class SearchCityActivity extends MvpActivity<SearchCityContract.SearchCit
         }
     }
 
-    //提示弹窗
-    private void showDialog(String dialogTitle, @NonNull DialogInterface.OnClickListener onClickListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(dialogTitle);
-        builder.setPositiveButton("确定", onClickListener);
-        builder.setNegativeButton("取消", null);
-        builder.create().show();
-    }
+
 
 }

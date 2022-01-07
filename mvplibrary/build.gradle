@@ -84,4 +84,7 @@ dependencies {
     //列表item侧滑删除
     api 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
 
+    api 'com.google.android.material:material:1.2.0'//更强
+
+
 }

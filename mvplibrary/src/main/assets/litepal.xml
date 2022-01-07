@@ -3,12 +3,13 @@
     <!--数据库名称-->
     <dbname value="GoodWeather" />
     <!--数据库版本-->
-    <version value="3" />
+    <version value="4" />
 
     <!--数据列表-->
     <list>
         <mapping class = "com.example.mvplibrary.bean.ResidentCity"/><!-- 常用城市 -->
         <mapping class = "com.example.mvplibrary.bean.Country"/><!-- 世界城市 -->
         <mapping class="com.example.mvplibrary.bean.AppVersion"/><!-- 版本信息-->
+        <mapping class="com.example.mvplibrary.bean.WallPaper"/> <!-- 壁纸信息-->
     </list>
 </litepal>

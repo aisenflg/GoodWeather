@@ -463,7 +463,8 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
         });
         //绑定布局中的控件
         TextView changeCity = mPopupWindow.getContentView().findViewById(R.id.tv_change_city);//切换城市
-        TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);  //切换背景
+        TextView changeBg = mPopupWindow.getContentView().findViewById(R.id.tv_change_bg);  //切换背景  已弃用
+        TextView wallpaper = mPopupWindow.getContentView().findViewById(R.id.tv_wallpaper);  //壁纸管理
         TextView searchCity = mPopupWindow.getContentView().findViewById(R.id.tv_search_city);  //搜索城市
         TextView hotCity = mPopupWindow.getContentView().findViewById(R.id.world_city);  //世界城市
         TextView oftenCity = mPopupWindow.getContentView().findViewById(R.id.tv_often_city);  //常用城市
@@ -472,14 +473,20 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
             showCityWindow();
             mPopupWindow.dismiss();
         });
-        changeBg.setOnClickListener(view -> {//切换背景
-            //放入缓存
-            SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN, true, context);
-            SPUtils.putString(Constant.DISTRICT, district, context);
-            SPUtils.putString(Constant.CITY, city, context);
-            startActivity(new Intent(MainActivity.this, BackgroundManagerActivity.class));
+//        changeBg.setOnClickListener(view -> {//切换背景
+//            //放入缓存
+//            SPUtils.putBoolean(Constant.FLAG_OTHER_RETURN, true, context);
+//            SPUtils.putString(Constant.DISTRICT, district, context);
+//            SPUtils.putString(Constant.CITY, city, context);
+//            startActivity(new Intent(MainActivity.this, BackgroundManagerActivity.class));
+//            mPopupWindow.dismiss();
+//        });
+
+        wallpaper.setOnClickListener(view -> {//壁纸管理
+            startActivity(new Intent(context, WallPaperActivity.class));
             mPopupWindow.dismiss();
         });
+
         searchCity.setOnClickListener(new View.OnClickListener() {//搜索城市
             @Override
             public void onClick(View v) {
@@ -956,50 +963,63 @@ public class MainActivity extends MvpActivity<WeatherContract.WeatherPresenter>
         } else {
             dismissLoadingDialog();
         }
-
-        isOpenChangeBg();//是否开启了切换背景
+        updateWallpaper();
     }
 
-    //判断是否开启了切换背景，没有开启则用默认的背景
-    private void isOpenChangeBg() {
-        boolean isEverydayImg = SPUtils.getBoolean(Constant.EVERYDAY_IMG, false, context);//每日图片
-        boolean isImgList = SPUtils.getBoolean(Constant.IMG_LIST, false, context);//图片列表
-        boolean isCustomImg = SPUtils.getBoolean(Constant.CUSTOM_IMG, false, context);//手动定义
-        //因为只有有一个为true，其他两个就都会是false,所以可以一个一个的判断
-        if (isEverydayImg != true && isImgList != true && isCustomImg != true) {
-            //当所有开关都没有打开的时候用默认的图片
-            bg.setBackgroundResource(R.mipmap.pic_bg);
+
+    /**
+     * 更换壁纸
+     */
+    private void updateWallpaper() {
+        String imgUrl = SPUtils.getString(Constant.WALLPAPER_URL, null, context);
+        if (imgUrl != null) {
+            Glide.with(context).load(imgUrl).into(bg);
         } else {
-            if (isEverydayImg != false) {//开启每日一图
-                mPresent.biying(context);
-            } else if (isImgList != false) {//开启图片列表
-                int position = SPUtils.getInt(Constant.IMG_POSITION, -1, context);
-                switch (position) {
-                    case 0:
-                        bg.setBackgroundResource(R.drawable.img_1);
-                        break;
-                    case 1:
-                        bg.setBackgroundResource(R.drawable.img_2);
-                        break;
-                    case 2:
-                        bg.setBackgroundResource(R.drawable.img_3);
-                        break;
-                    case 3:
-                        bg.setBackgroundResource(R.drawable.img_4);
-                        break;
-                    case 4:
-                        bg.setBackgroundResource(R.drawable.img_5);
-                        break;
-                    case 5:
-                        bg.setBackgroundResource(R.drawable.img_6);
-                        break;
-                }
-            } else if (isCustomImg) {
-                String imgPath = SPUtils.getString(Constant.CUSTOM_IMG_PATH, "", context);
-                Glide.with(context).load(imgPath).into(bg);
-            }
+            Glide.with(context).load(R.drawable.img_5).into(bg);
         }
     }
+
+
+//    //判断是否开启了切换背景，没有开启则用默认的背景
+//    private void isOpenChangeBg() {
+//        boolean isEverydayImg = SPUtils.getBoolean(Constant.EVERYDAY_IMG, false, context);//每日图片
+//        boolean isImgList = SPUtils.getBoolean(Constant.IMG_LIST, false, context);//图片列表
+//        boolean isCustomImg = SPUtils.getBoolean(Constant.CUSTOM_IMG, false, context);//手动定义
+//        //因为只有有一个为true，其他两个就都会是false,所以可以一个一个的判断
+//        if (isEverydayImg != true && isImgList != true && isCustomImg != true) {
+//            //当所有开关都没有打开的时候用默认的图片
+//            bg.setBackgroundResource(R.mipmap.pic_bg);
+//        } else {
+//            if (isEverydayImg != false) {//开启每日一图
+//                mPresent.biying(context);
+//            } else if (isImgList != false) {//开启图片列表
+//                int position = SPUtils.getInt(Constant.IMG_POSITION, -1, context);
+//                switch (position) {
+//                    case 0:
+//                        bg.setBackgroundResource(R.drawable.img_1);
+//                        break;
+//                    case 1:
+//                        bg.setBackgroundResource(R.drawable.img_2);
+//                        break;
+//                    case 2:
+//                        bg.setBackgroundResource(R.drawable.img_3);
+//                        break;
+//                    case 3:
+//                        bg.setBackgroundResource(R.drawable.img_4);
+//                        break;
+//                    case 4:
+//                        bg.setBackgroundResource(R.drawable.img_5);
+//                        break;
+//                    case 5:
+//                        bg.setBackgroundResource(R.drawable.img_6);
+//                        break;
+//                }
+//            } else if (isCustomImg) {
+//                String imgPath = SPUtils.getString(Constant.CUSTOM_IMG_PATH, "", context);
+//                Glide.with(context).load(imgPath).into(bg);
+//            }
+//        }
+//    }
 
 
     @Override

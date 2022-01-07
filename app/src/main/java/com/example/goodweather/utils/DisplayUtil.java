@@ -11,22 +11,20 @@ import android.util.TypedValue;
  */
 public class DisplayUtil {
 
-    public static int dip2px(Context context, int dp){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,context.getResources().getDisplayMetrics());
+    public static int dip2px(Context context, int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
 
-    protected static int sp2px(Context context, int sp){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,context.getResources().getDisplayMetrics());
+    protected static int sp2px(Context context, int sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
-
 
 
     public static int px2dp(Context context, float pxValue) {
-        final float scale =  context.getResources().getDisplayMetrics().density;
+        final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
-
 
 
     public static int dp2px(Context context, float dipValue) {
@@ -35,12 +33,10 @@ public class DisplayUtil {
     }
 
 
-
     public static int px2sp(Context context, float pxValue) {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / fontScale + 0.5f);
     }
-
 
 
     public static int sp2px(Context context, float spValue) {
@@ -48,7 +44,7 @@ public class DisplayUtil {
         return (int) (spValue * fontScale + 0.5f);
     }
 
-    public static Bitmap bitmapResize(Bitmap src, float pxX, float pxY){
+    public static Bitmap bitmapResize(Bitmap src, float pxX, float pxY) {
         //压缩图片
         Matrix matrix = new Matrix();
         matrix.postScale(pxX / src.getWidth(), pxY / src.getHeight());
@@ -57,15 +53,16 @@ public class DisplayUtil {
     }
 
 
-    public static int getScreenWidth(Context context){
+    public static int getScreenWidth(Context context) {
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         return dm.widthPixels;
     }
 
-    public static int getScreenHeight(Context context){
+    public static int getScreenHeight(Context context) {
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         return dm.heightPixels;
     }
+
 }
 
 

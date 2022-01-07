@@ -187,7 +187,6 @@ public class WeatherUtil {
 
     /**
      * 紫外线等级描述
-     *
      * @param uvIndex
      * @return
      */
@@ -208,6 +207,35 @@ public class WeatherUtil {
         }
         return result;
     }
+
+    /**
+     * 紫外线详细描述
+     * @param uvIndexInfo
+     * @return
+     */
+    public static String uvIndexToTip(String uvIndexInfo) {
+        String result = null;
+        switch (uvIndexInfo) {
+            case "较弱":
+                result = "紫外线较弱，不需要采取防护措施；若长期在户外，建议涂擦SPF在8-12之间的防晒护肤品。";
+                break;
+            case "弱":
+                result = "紫外线弱，可以适当采取一些防护措施，涂擦SPF在12-15之间、PA+的防晒护肤品。";
+                break;
+            case "中等":
+                result = "紫外线中等，外出时戴好遮阳帽、太阳镜和太阳伞等；涂擦SPF高于15、PA+的防晒护肤品。";
+                break;
+            case "强":
+                result = "紫外线较强，避免在10点至14点暴露于日光下.外出时戴好遮阳帽、太阳镜和太阳伞等，涂擦SPF20左右、PA++的防晒护肤品。";
+                break;
+            case "很强":
+                result = "紫外线很强，尽可能不在室外活动，必须外出时，要采取各种有效的防护措施。";
+                break;
+        }
+        return result;
+    }
+
+
 
 
     /**

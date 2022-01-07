@@ -17,15 +17,12 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import com.example.goodweather.R;
 import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.utils.DisplayUtil;
 import com.example.goodweather.utils.IconUtils;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +30,7 @@ import java.util.List;
 
 /**
  * 24小时天气预报自定义View
+ * @author hefeng
  */
 public class HourlyForecastView extends View implements ScrollWatcher {
 
@@ -595,7 +593,7 @@ public class HourlyForecastView extends View implements ScrollWatcher {
     }
 
     private int getScrollBarX() {
-        int x = (ITEM_SIZE - 1) * itemWidth * scrollOffset / maxScrollOffset;
+        int x = (ITEM_SIZE - 1) * itemWidth ;
         x = x - DisplayUtil.dp2px(mContext, 3);
         return x;
     }

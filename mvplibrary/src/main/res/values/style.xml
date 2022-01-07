@@ -145,6 +145,13 @@
         <item name="android:windowExitAnimation">@anim/dialog_scale_anim_out</item>
     </style>
 
+    <!-- 圆角图片 -->
+    <style name="roundedCornerStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/dp_16</item>
+    </style>
+
+
     <declare-styleable name="SunAnimationView">
         <attr name="sun_circle_color" format="color"/>
         <attr name="sun_font_color" format="color"/>

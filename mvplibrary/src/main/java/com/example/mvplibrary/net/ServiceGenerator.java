@@ -35,6 +35,11 @@ public class ServiceGenerator {
                 break;
             case 5: //APP更新
                 BASE_URL = "https://www.pgyer.com";//蒲公英版本更新
+                break;
+
+            case 6: //网络手机壁纸返回地址
+                BASE_URL = "http://service.picasso.adesk.com";//蒲公英版本更新
+                break;
 
         }
         return BASE_URL;

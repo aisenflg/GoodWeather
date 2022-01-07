@@ -11,6 +11,7 @@ import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.SearchCityBean;
 import com.example.goodweather.bean.SunMoonResponse;
+import com.example.goodweather.bean.WallPaperResponse;
 import com.example.goodweather.bean.WarningResponse;
 import com.example.goodweather.bean.WeatherBean;
 import com.example.goodweather.bean.WorldCityResponse;
@@ -174,4 +175,13 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/apiv2/app/check")
     Call<AppVersion> getAppVersion(@Field("_api_key") String apiKey,@Field("appKey") String appKey);
+
+    /**
+     * 手机壁纸API
+     *
+     * @return WallPaperResponse 网络壁纸数据返回
+     */
+    @GET("/v1/vertical/vertical?limit=30&skip=180&adult=false&first=0&order=hot")
+    Call<WallPaperResponse> getWallPaper();
+
 }
