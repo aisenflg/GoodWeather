@@ -8,6 +8,7 @@ import com.example.goodweather.bean.BiYingImgBean;
 import com.example.goodweather.bean.DailyResponse;
 import com.example.goodweather.bean.HourlyResponse;
 import com.example.goodweather.bean.LifestyleResponse;
+import com.example.goodweather.bean.MinutePrecResponse;
 import com.example.goodweather.bean.NewSearchCityResponse;
 import com.example.goodweather.bean.NowResponse;
 import com.example.goodweather.bean.WarningResponse;
@@ -228,6 +229,30 @@ public class WeatherContract {
             });
         }
 
+        /**
+         * 分钟级降水
+         *
+         * @param location 经纬度拼接字符串，使用英文逗号分隔,经度在前纬度在后
+         */
+        public void getMinutePrec(String location) {
+            ApiService service = ServiceGenerator.createService(ApiService.class, 3);
+            service.getMinutePrec(location).enqueue(new NetCallBack<MinutePrecResponse>() {
+                @Override
+                public void onSuccess(Call<MinutePrecResponse> call, Response<MinutePrecResponse> response) {
+                    if (getView() != null) {
+                        getView().getMinutePrecResult(response);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    if (getView() != null) {
+                        getView().getWeatherDataFailed();
+                    }
+                }
+            });
+        }
+
 
 
     }
@@ -257,6 +282,10 @@ public class WeatherContract {
         void getWarningResult(Response<WarningResponse> response);
         //版本更新相关信息
         void getAppVersionResult(Response<AppVersion> response);
+
+        //分钟级降水
+        void getMinutePrecResult(Response<MinutePrecResponse> response);
+
 
         //天气数据错误返回
         void getWeatherDataFailed();

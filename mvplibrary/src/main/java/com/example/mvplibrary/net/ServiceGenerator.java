@@ -28,10 +28,10 @@ public class ServiceGenerator {
                 BASE_URL = "https://search.heweather.net";
                 break;
             case 3://和风天气  新增
-                BASE_URL = "https://devapi.heweather.net";//V7版本接口地址
+                BASE_URL = "https://devapi.qweather.net";//V7版本接口地址
                 break;
             case 4://搜索城市  新增
-                BASE_URL = "https://geoapi.heweather.net";//V7版本下的搜索城市地址
+                BASE_URL = "https://geoapi.qweather.net";//V7版本下的搜索城市地址
                 break;
             case 5: //APP更新
                 BASE_URL = "https://www.pgyer.com";//蒲公英版本更新
