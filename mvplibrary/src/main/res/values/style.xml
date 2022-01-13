@@ -151,6 +151,13 @@
         <item name="cornerSize">@dimen/dp_16</item>
     </style>
 
+    <!-- 圆角图片 -->
+    <style name="roundedImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+
 
     <declare-styleable name="SunAnimationView">
         <attr name="sun_circle_color" format="color"/>

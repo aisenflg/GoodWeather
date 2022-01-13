@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.example.goodweather.R;
+import com.example.goodweather.bean.BiYingImgBean;
+import com.example.goodweather.contract.SplashContrat;
+import com.example.goodweather.utils.Constant;
+import com.example.goodweather.utils.SPUtils;
 import com.example.goodweather.utils.ToastUtils;
-import com.example.mvplibrary.base.BaseActivity;
 import com.example.mvplibrary.bean.Country;
+import com.example.mvplibrary.mvp.MvpActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.litepal.LitePal;
@@ -20,8 +24,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import retrofit2.Response;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends MvpActivity<SplashContrat.SplashPresenter> implements SplashContrat.ISplashView {
 
     private List<Country> list;//数据列表
     private RxPermissions rxPermissions;//权限请求框架
@@ -63,6 +68,8 @@ public class SplashActivity extends BaseActivity {
                     }
                 });
     }
+
+
 
 
     private void initCountryData() {
@@ -107,6 +114,30 @@ public class SplashActivity extends BaseActivity {
     }
 
 
+    /**
+     * 必应壁纸数据返回
+     *
+     * @param response BiYingImgResponse
+     */
+    @Override
+    public void getBiYingResult(Response<BiYingImgBean> response) {
+        if (response.body().getImages() != null) {
+            //得到的图片地址是没有前缀的，所以加上前缀否则显示不出来
+            String biyingUrl = "http://cn.bing.com" + response.body().getImages().get(0).getUrl();
+            SPUtils.putString(Constant.EVERYDAY_TIP_IMG,biyingUrl,context);
+        } else {
+            ToastUtils.showShortToast(context, "未获取到必应的图片");
+        }
+    }
 
 
+    @Override
+    public void getDataFailed() {
+
+    }
+
+    @Override
+    protected SplashContrat.SplashPresenter createPresent() {
+        return new SplashContrat.SplashPresenter();
+    }
 }

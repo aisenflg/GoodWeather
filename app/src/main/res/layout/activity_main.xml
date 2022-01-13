@@ -179,14 +179,14 @@
                                 android:textSize="14sp" />
 
                         </LinearLayout>
-
+                        <!--城市-->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
-                            <!--城市-->
+
                             <TextView
                                 android:id="@+id/tv_city"
                                 android:layout_width="wrap_content"
@@ -202,6 +202,36 @@
                                 android:background="@mipmap/icon_location"
                                 android:visibility="gone" />
                         </LinearLayout>
+                        <!--切换城市-->
+                        <!--常用城市快捷切换-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rv_change_city"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+
+                        <!--切换城市-->
+                        <!--常用城市快捷切换-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rv_change_city"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+
                         <!--上一次更新时间-->
                         <LinearLayout
                             android:layout_width="match_parent"
