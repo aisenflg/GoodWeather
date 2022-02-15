@@ -99,14 +99,38 @@
                             android:textColor="@color/white"
                             android:textSize="@dimen/sp_12" />
 
-                        <!--星期-->
-                        <TextView
-                            android:id="@+id/tv_week"
+                        <LinearLayout
+                            android:animateLayoutChanges="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="16dp"
-                            android:textColor="@color/white"
-                            android:textSize="18sp" />
+                            android:gravity="center_vertical">
+                            <!--星期-->
+                            <TextView
+                                android:id="@+id/tv_week"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/dp_12"
+                                android:paddingLeft="16dp"
+                                android:text="星期一"
+                                android:textColor="@color/white"
+                                android:textSize="18sp" />
+                            <!--播放图标-->
+                            <ImageView
+                                android:id="@+id/iv_voice_broadcast"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@mipmap/icon_broadcast"
+                                android:visibility="gone" />
+
+                            <!--播报状态-->
+                            <TextView
+                                android:layout_marginStart="@dimen/dp_12"
+                                android:id="@+id/tv_broadcast_state"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white_4" />
+                        </LinearLayout>
+
                         <!--温度-->
                         <RelativeLayout
                             android:layout_width="match_parent"
@@ -210,7 +234,7 @@
                             android:animateLayoutChanges="true">
 
                             <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/rv_change_city"
+                                android:id="@+id/rv_change_cit"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="12dp"

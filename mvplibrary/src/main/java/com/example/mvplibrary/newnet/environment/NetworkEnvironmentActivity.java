@@ -1,4 +1,4 @@
-package com.llw.network.environment;
+package com.example.mvplibrary.newnet.environment;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -11,12 +11,12 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import com.llw.network.R;
+import com.example.mvplibrary.R;
+
 
 /**
  * 设置网络环境Activity
  *
- * @author llw
  */
 public class NetworkEnvironmentActivity extends AppCompatActivity {
 

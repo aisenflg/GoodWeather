@@ -7,10 +7,8 @@ import com.example.goodweather.bean.NowResponse;
 import com.example.mvplibrary.base.BasePresenter;
 import com.example.mvplibrary.base.BaseView;
 import com.example.mvplibrary.net.ServiceGenerator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.mvplibrary.newnet.NetworkApi;
+import com.example.mvplibrary.newnet.observer.BaseObserver;
 
 public class WorldCityWeatherContract {
     public static class WorldCityWeatherPresenter extends BasePresenter<IWorldCityWeatherView>{
@@ -20,21 +18,38 @@ public class WorldCityWeatherContract {
          * 实况天气
          */
         public void nowWeather(String location){
-            mService.nowWeather(location).enqueue(new Callback<NowResponse>() {
-                @Override
-                public void onResponse(Call<NowResponse> call, Response<NowResponse> response) {
-                    if (getView() != null) {
-                        getView().getNowResult(response);
-                    }
-                }
+//            mService.nowWeather(location).enqueue(new Callback<NowResponse>() {
+//                @Override
+//                public void onResponse(Call<NowResponse> call, Response<NowResponse> response) {
+//                    if (getView() != null) {
+//                        getView().getNowResult(response);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<NowResponse> call, Throwable t) {
+//                    if (getView() != null) {
+//                        getView().getDataFailed();
+//                    }
+//                }
+//            });
 
-                @Override
-                public void onFailure(Call<NowResponse> call, Throwable t) {
-                    if (getView() != null) {
-                        getView().getDataFailed();
-                    }
-                }
-            });
+            mService.nowWeather(location)
+                    .compose(NetworkApi.applySchedulers(new BaseObserver<NowResponse>() {
+                        @Override
+                        public void onSuccess(NowResponse response) {
+                            if (getView() != null) {
+                                getView().getNowResult(response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable e) {
+                            if (getView() != null) {
+                                getView().getDataFailed();
+                            }
+                        }
+                    }));
         }
 
 
@@ -43,21 +58,38 @@ public class WorldCityWeatherContract {
          * @param location   城市名
          */
         public void dailyWeather(String location){
-            mService.dailyWeather("7d",location).enqueue(new Callback<DailyResponse>() {
-                @Override
-                public void onResponse(Call<DailyResponse> call, Response<DailyResponse> response) {
-                    if (getView() != null) {
-                        getView().getDailyResult(response);
-                    }
-                }
+//            mService.dailyWeather("7d",location).enqueue(new Callback<DailyResponse>() {
+//                @Override
+//                public void onResponse(Call<DailyResponse> call, Response<DailyResponse> response) {
+//                    if (getView() != null) {
+//                        getView().getDailyResult(response);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<DailyResponse> call, Throwable t) {
+//                    if (getView() != null) {
+//                        getView().getDataFailed();
+//                    }
+//                }
+//            });
 
-                @Override
-                public void onFailure(Call<DailyResponse> call, Throwable t) {
-                    if (getView() != null) {
-                        getView().getDataFailed();
-                    }
-                }
-            });
+            mService.dailyWeather("7d",location)
+                    .compose(NetworkApi.applySchedulers(new BaseObserver<DailyResponse>() {
+                        @Override
+                        public void onSuccess(DailyResponse response) {
+                            if (getView() != null) {
+                                getView().getDailyResult(response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable e) {
+                            if (getView() != null) {
+                                getView().getDataFailed();
+                            }
+                        }
+                    }));
         }
 
         /**
@@ -65,31 +97,48 @@ public class WorldCityWeatherContract {
          * @param location   城市名
          */
         public void hourlyWeather(String location){
-            mService.hourlyWeather(location).enqueue(new Callback<HourlyResponse>() {
-                @Override
-                public void onResponse(Call<HourlyResponse> call, Response<HourlyResponse> response) {
-                    if (getView() != null) {
-                        getView().getHourlyResult(response);
-                    }
-                }
+//            mService.hourlyWeather(location).enqueue(new Callback<HourlyResponse>() {
+//                @Override
+//                public void onResponse(Call<HourlyResponse> call, Response<HourlyResponse> response) {
+//                    if (getView() != null) {
+//                        getView().getHourlyResult(response);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<HourlyResponse> call, Throwable t) {
+//                    if (getView() != null) {
+//                        getView().getDataFailed();
+//                    }
+//                }
+//            });
 
-                @Override
-                public void onFailure(Call<HourlyResponse> call, Throwable t) {
-                    if (getView() != null) {
-                        getView().getDataFailed();
-                    }
-                }
-            });
+            mService.hourlyWeather(location)
+                    .compose(NetworkApi.applySchedulers(new BaseObserver<HourlyResponse>() {
+                        @Override
+                        public void onSuccess(HourlyResponse response) {
+                            if (getView() != null) {
+                                getView().getHourlyResult(response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable e) {
+                            if (getView() != null) {
+                                getView().getDataFailed();
+                            }
+                        }
+                    }));
         }
     }
 
     public interface IWorldCityWeatherView extends BaseView {
 
         //实况天气
-        public void getNowResult(Response<NowResponse> response);
+        public void getNowResult(NowResponse response);
         //天气预报  7天
-        void getDailyResult(Response<DailyResponse> response);
+        void getDailyResult(DailyResponse response);
         //逐小时天气预报
-        void getHourlyResult(Response<HourlyResponse> response);
+        void getHourlyResult(HourlyResponse response);
     }
 }

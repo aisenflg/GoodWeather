@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import retrofit2.Response;
 
 import static com.example.mvplibrary.utils.RecyclerViewAnimation.runLayoutAnimation;
 
@@ -125,9 +124,9 @@ public class HotCityActivity extends MvpActivity<HotCityContract.HotCityPresente
 
 
     @Override
-    public void getHotCityResult(Response<HotCityBean> response) {
+    public void getHotCityResult(HotCityBean response) {
         dismissLoadingDialog();
-        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
+        if (("ok").equals(response.getHeWeather6().get(0).getStatus())) {
             toolbar.setNavigationIcon(getResources().getDrawable(R.mipmap.icon_return_white));//返回箭头颜色
             tvTitle.setTextColor(getResources().getColor(R.color.white));//标题颜色
             if (type == 0) {//标题判断
@@ -143,16 +142,16 @@ public class HotCityActivity extends MvpActivity<HotCityContract.HotCityPresente
             }
 
             //数据赋值
-            if (response.body().getHeWeather6().get(0).getBasic() != null && response.body().getHeWeather6().get(0).getBasic().size() > 0) {
+            if (response.getHeWeather6().get(0).getBasic() != null && response.getHeWeather6().get(0).getBasic().size() > 0) {
                 mList.clear();
-                mList.addAll(response.body().getHeWeather6().get(0).getBasic());
+                mList.addAll(response.getHeWeather6().get(0).getBasic());
                 mAdapter.notifyDataSetChanged();
                 runLayoutAnimation(rv);//刷新适配器
             } else {
                 ToastUtils.showShortToast(context, "数据为空");
             }
         } else {
-            ToastUtils.showShortToast(context, response.body().getHeWeather6().get(0).getStatus());
+            ToastUtils.showShortToast(context, response.getHeWeather6().get(0).getStatus());
         }
     }
 

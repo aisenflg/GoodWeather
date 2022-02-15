@@ -27,7 +27,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
-import retrofit2.Response;
 
 public class HotCityWeatherActivity extends MvpActivity<HotCityWeatherContract.HotCityWeatherPresenter>
         implements HotCityWeatherContract.IHotCityWeatherView {
@@ -83,28 +82,28 @@ public class HotCityWeatherActivity extends MvpActivity<HotCityWeatherContract.H
 
 
     @Override
-    public void getHotCityWeatherResult(Response<WeatherBean> response) {
-        if (("ok").equals(response.body().getHeWeather6().get(0).getStatus())) {
-            if (response.body().getHeWeather6().get(0).getBasic() != null) {//得到数据不为空则进行数据显示
+    public void getHotCityWeatherResult(WeatherBean response) {
+        if (("ok").equals(response.getHeWeather6().get(0).getStatus())) {
+            if (response.getHeWeather6().get(0).getBasic() != null) {//得到数据不为空则进行数据显示
                 //基本天气信息
-                WeatherBean.HeWeather6Bean.NowBean nowBean = response.body().getHeWeather6().get(0).getNow();
-                tvTitle.setText(response.body().getHeWeather6().get(0).getBasic().getLocation());
+                WeatherBean.HeWeather6Bean.NowBean nowBean = response.getHeWeather6().get(0).getNow();
+                tvTitle.setText(response.getHeWeather6().get(0).getBasic().getLocation());
                 Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
                 tvTemperature.setText(nowBean.getTmp());
                 tvTemperature.setTypeface(typeface);//使用字体
                 int code = Integer.parseInt(nowBean.getCond_code());//获取天气状态码，根据状态码来显示图标
                 WeatherUtil.changeIcon(ivWeatherState, code);//调用工具类中写好的方法
                 //最低温和最高温
-                tvTemMax.setText(response.body().getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_max());
-                tvTemMin.setText(" / " + response.body().getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_min() + " ℃");
+                tvTemMax.setText(response.getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_max());
+                tvTemMin.setText(" / " + response.getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_min() + " ℃");
 
                 //传递数据到TodayFragment和ForcastFragment
-                EventBus.getDefault().post(new TodayHourlyEvent(response.body().getHeWeather6().get(0).getHourly()));
-                EventBus.getDefault().post(new ForecastEvent(response.body().getHeWeather6().get(0).getDaily_forecast()));
+                EventBus.getDefault().post(new TodayHourlyEvent(response.getHeWeather6().get(0).getHourly()));
+                EventBus.getDefault().post(new ForecastEvent(response.getHeWeather6().get(0).getDaily_forecast()));
 
                 dismissLoadingDialog();
             } else {
-                ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getHeWeather6().get(0).getStatus()));
+                ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.getHeWeather6().get(0).getStatus()));
             }
         }
     }

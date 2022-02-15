@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import retrofit2.Response;
 
 public class WorldCityWeatherActivity extends MvpActivity<WorldCityWeatherContract.WorldCityWeatherPresenter> implements WorldCityWeatherContract.IWorldCityWeatherView {
     @BindView(R.id.tv_title)
@@ -92,19 +91,19 @@ public class WorldCityWeatherActivity extends MvpActivity<WorldCityWeatherContra
      * @param response
      */
     @Override
-    public void getNowResult(Response<NowResponse> response) {
+    public void getNowResult(NowResponse response) {
 
-        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
+        if (response.getCode().equals(Constant.SUCCESS_CODE)) {
             Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/GenJyuuGothic-ExtraLight.ttf");
-            tvTemperature.setText(response.body().getNow().getTemp() + "°");
+            tvTemperature.setText(response.getNow().getTemp() + "°");
             tvTemperature.setTypeface(typeface);//使用字体
-            int code = Integer.parseInt(response.body().getNow().getIcon());//获取天气状态码，根据状态码来显示图标
+            int code = Integer.parseInt(response.getNow().getIcon());//获取天气状态码，根据状态码来显示图标
             WeatherUtil.changeIcon(ivWeatherState, code);//调用工具类中写好的方法
 
-            tvWeatherState.setText("当前：" + response.body().getNow().getText());
-            tvWindState.setText(response.body().getNow().getWindDir()+"   "+response.body().getNow().getWindScale()+"级");
+            tvWeatherState.setText("当前：" + response.getNow().getText());
+            tvWindState.setText(response.getNow().getWindDir()+"   "+response.getNow().getWindScale()+"级");
         } else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.getCode()));
         }
     }
 
@@ -114,16 +113,16 @@ public class WorldCityWeatherActivity extends MvpActivity<WorldCityWeatherContra
      * @param response
      */
     @Override
-    public void getDailyResult(Response<DailyResponse> response) {
-        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
-            if (response.body().getDaily() != null && response.body().getDaily().size() > 0) {
-                tvTemMax.setText(response.body().getDaily().get(0).getTempMax());
-                tvTemMin.setText(" / " + response.body().getDaily().get(0).getTempMin());
+    public void getDailyResult(DailyResponse response) {
+        if (response.getCode().equals(Constant.SUCCESS_CODE)) {
+            if (response.getDaily() != null && response.getDaily().size() > 0) {
+                tvTemMax.setText(response.getDaily().get(0).getTempMax());
+                tvTemMin.setText(" / " + response.getDaily().get(0).getTempMin());
             } else {
                 ToastUtils.showShortToast(context, "暂无天气预报数据");
             }
         } else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.getCode()));
         }
     }
 
@@ -133,10 +132,10 @@ public class WorldCityWeatherActivity extends MvpActivity<WorldCityWeatherContra
      * @param response
      */
     @Override
-    public void getHourlyResult(Response<HourlyResponse> response) {
+    public void getHourlyResult(HourlyResponse response) {
 
-        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
-            List<HourlyResponse.HourlyBean> data = response.body().getHourly();
+        if (response.getCode().equals(Constant.SUCCESS_CODE)) {
+            List<HourlyResponse.HourlyBean> data = response.getHourly();
             if (data != null && data.size() > 0) {
                 mList.clear();
                 mList.addAll(data);
@@ -147,7 +146,7 @@ public class WorldCityWeatherActivity extends MvpActivity<WorldCityWeatherContra
             }
 
         } else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.getCode()));
         }
     }
 

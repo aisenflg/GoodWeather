@@ -1,4 +1,4 @@
-package com.llw.network;
+package com.example.mvplibrary.newnet;
 
 import android.app.Application;
 
@@ -7,6 +7,8 @@ import android.app.Application;
  * @author K
  */
 public interface INetworkRequiredInfo {
+
+
 
     /**
      * 获取App版本名

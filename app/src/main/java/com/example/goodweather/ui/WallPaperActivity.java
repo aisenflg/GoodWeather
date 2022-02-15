@@ -275,10 +275,10 @@ public class WallPaperActivity extends MvpActivity<WallPagerContract.WallPagerPr
     }
 
     @Override
-    public void getBiYingResult(Response<BiYingImgBean> response) {
-        if (response.body().getImages() != null) {
+    public void getBiYingResult(BiYingImgBean response) {
+        if (response.getImages() != null) {
             //得到的图片地址是没有前缀的，所以加上前缀否则显示不出来
-            biyingUrl = "http://cn.bing.com" + response.body().getImages().get(0).getUrl();
+            biyingUrl = "http://cn.bing.com" + response.getImages().get(0).getUrl();
             Log.d("type-->", biyingUrl);
         } else {
             ToastUtils.showShortToast(context, "未获取到必应的图片");
@@ -287,10 +287,10 @@ public class WallPaperActivity extends MvpActivity<WallPagerContract.WallPagerPr
     }
 
     @Override
-    public void getWallPaperResult(Response<WallPaperResponse> response) {
-        if (response.body().getMsg().equals(Constant.SUCCESS)) {
+    public void getWallPaperResult(WallPaperResponse response) {
+        if (response.getMsg().equals(Constant.SUCCESS)) {
 
-            List<WallPaperResponse.ResBean.VerticalBean> data = response.body().getRes().getVertical();
+            List<WallPaperResponse.ResBean.VerticalBean> data = response.getRes().getVertical();
 
             //创建头部和底部的两个广告item的假数据
             topBean = new WallPaperResponse.ResBean.VerticalBean();

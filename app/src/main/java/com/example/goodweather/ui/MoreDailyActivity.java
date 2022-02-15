@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import retrofit2.Response;
 
 
 /**
@@ -78,10 +77,10 @@ public class MoreDailyActivity extends MvpActivity<MoreDailyContract.MoreDailyPr
      * @param response
      */
     @Override
-    public void getMoreDailyResult(Response<DailyResponse> response) {
+    public void getMoreDailyResult(DailyResponse response) {
         dismissLoadingDialog();
-        if (response.body().getCode().equals(Constant.SUCCESS_CODE)) {
-            List<DailyResponse.DailyBean> data = response.body().getDaily();
+        if (response.getCode().equals(Constant.SUCCESS_CODE)) {
+            List<DailyResponse.DailyBean> data = response.getDaily();
             if (data != null && data.size() > 0) {
                 mList.clear();//添加数据之前先清除
                 mList.addAll(data);//添加数据
@@ -96,7 +95,7 @@ public class MoreDailyActivity extends MvpActivity<MoreDailyContract.MoreDailyPr
                 ToastUtils.showShortToast(context, "天气预报数据为空");
             }
         }else {
-            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.body().getCode()));
+            ToastUtils.showShortToast(context, CodeToStringUtils.WeatherCode(response.getCode()));
         }
     }
 

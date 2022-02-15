@@ -228,4 +228,12 @@ public class DateUtils {
     }
 
 
+    /**
+     * 获取当前日期
+     * @return 日期
+     */
+    public static String getNowDateStr() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd号");
+        return sdf.format(new Date());
+    }
 }

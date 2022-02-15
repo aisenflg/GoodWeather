@@ -1,4 +1,4 @@
-package com.llw.network.utils;
+package com.example.mvplibrary.newnet.utils;
 
 import android.text.TextUtils;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package com.llw.network.observer;
+package com.example.mvplibrary.newnet.observer;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

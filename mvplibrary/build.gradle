@@ -30,8 +30,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -57,13 +58,16 @@ dependencies {
     api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar'
     api 'io.reactivex.rxjava2:rxandroid:2.0.2'
     api "io.reactivex.rxjava2:rxjava:2.0.0"
+    api 'androidx.preference:preference:1.0.0'
     //状态栏
     api 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     //支持okhttp
     api 'com.squareup.okhttp3:okhttp:3.8.1'
     api 'com.squareup.retrofit2:retrofit:2.4.0'
     api 'com.squareup.retrofit2:converter-gson:2.4.0'
+    //日志拦截器
     api 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    api 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     //阿里巴巴 FastJson
     api 'com.alibaba:fastjson:1.2.57'
     //下拉刷新框架
@@ -85,6 +89,10 @@ dependencies {
     api 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
 
     api 'com.google.android.material:material:1.2.0'//更强
+
+    //下拉框
+    api 'com.github.arcadefire:nice-spinner:1.4.3'
+
 
 
 }

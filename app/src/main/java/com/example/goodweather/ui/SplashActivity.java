@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
-import retrofit2.Response;
 
 public class SplashActivity extends MvpActivity<SplashContrat.SplashPresenter> implements SplashContrat.ISplashView {
 
@@ -120,10 +119,10 @@ public class SplashActivity extends MvpActivity<SplashContrat.SplashPresenter> i
      * @param response BiYingImgResponse
      */
     @Override
-    public void getBiYingResult(Response<BiYingImgBean> response) {
-        if (response.body().getImages() != null) {
+    public void getBiYingResult(BiYingImgBean response) {
+        if (response.getImages() != null) {
             //得到的图片地址是没有前缀的，所以加上前缀否则显示不出来
-            String biyingUrl = "http://cn.bing.com" + response.body().getImages().get(0).getUrl();
+            String biyingUrl = "http://cn.bing.com" + response.getImages().get(0).getUrl();
             SPUtils.putString(Constant.EVERYDAY_TIP_IMG,biyingUrl,context);
         } else {
             ToastUtils.showShortToast(context, "未获取到必应的图片");
